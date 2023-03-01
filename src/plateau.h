@@ -29,6 +29,10 @@ class plateau {
 
     void initBoard();
     void displayBoard();
+    /*! \brief bouge le vehicule dans la direction indiquée en paramètre si c'est possible.*/
+    /*! \param dir true pour avancer false pour reculer*/ 
+    void moveVehicule(vehicule &v,bool dir);
+    void play();
 
 };
 

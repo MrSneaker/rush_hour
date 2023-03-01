@@ -32,6 +32,9 @@ public:
 
     bool getDirection();
     void setDirection(bool direction);
+
+    void moveForwardToDir();
+    void moveBackwardToDir();
 };
 
 #endif // _VEHICULE_H__

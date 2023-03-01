@@ -1,9 +1,13 @@
 #include "plateau.h"
 
-int main(){
+int main()
+{
 
     plateau p;
     p.displayBoard();
+    p.play();
+
+
 
     return 0;
 }
