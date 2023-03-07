@@ -33,8 +33,11 @@ public:
     bool getDirection();
     void setDirection(bool direction);
 
-    void moveForwardToDir();
-    void moveBackwardToDir();
+    void moveForwardToDir(int pas);
+    void moveBackwardToDir(int pas);
+
+    // surcharge de l'opérateur ==
+    bool operator!=(const vehicule &v) const;
 };
 
 #endif // _VEHICULE_H__
