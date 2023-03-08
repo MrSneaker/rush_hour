@@ -109,70 +109,97 @@ void plateau::displayBoard()
          << endl;
 }
 
-void plateau::moveVehicule(vehicule &v, bool dir, int pas)
+void plateau::moveVehiculeF(vehicule &v, int pas)
 {
-    bool ok_to_go = false;
-    if (dir)
+    bool ok_to_go;
+    for (int j = 0; j < vehicules.size(); j++)
     {
-        for (int j = 0; j < vehicules.size(); j++)
+        if (v.getDirection())
         {
-            if (v != vehicules[j])
-            {
-                if (v.getDirection())
-                {
-                    ok_to_go = v.getPositionCol() + v.getLength() + pas != vehicules[j].getPositionCol() && v.getPositionRow() != vehicules[j].getPositionRow() && v.getPositionCol() + v.getLength() + pas <= TAILLE;
-                }
-                else
-                {
-                    ok_to_go = v.getPositionRow() + v.getLength() + pas != vehicules[j].getPositionRow() && v.getPositionCol() != vehicules[j].getPositionCol() && v.getPositionRow() + v.getLength() + pas <= TAILLE;
-                }
-                if (!ok_to_go)
-                    break;
-            }
-        }
-        cout << "ok_to_go: " << ok_to_go << endl;
-        cout << "pas: " << pas << endl;
-        if (ok_to_go)
-        {
-            v.moveForwardToDir(pas);
-            moveCount++;
+            // vérifie qu'il n'y ai pas collision entre la position de tête du vehicule[j] et la position future voulue par v.
+            // la position de tête correspond à la position sans prise en compte de la longueur.
+            // = 1 si libre, 0 sinon.
+            bool front_is_free = ((v.getPositionCol() + (v.getLength() - 1) + pas != vehicules[j].getPositionCol()) &&
+                                  (v.getPositionRow() != vehicules[j].getPositionRow()));
+            // même chose mais en prenant en compte la longueur.
+            bool back_is_free = ((v.getPositionCol() + (v.getLength() - 1) + pas != vehicules[j].getPositionCol() + (vehicules[j].getLength() - 1)) &&
+                                 (v.getPositionRow() != vehicules[j].getPositionRow() + (vehicules[j].getLength() - 1)));
+            bool cell_not_taken = front_is_free || back_is_free;
+
+            // test si on est dans le cadre ou non.
+            bool in_board = (v.getPositionCol() + (v.getLength() - 1) + pas < TAILLE);
+            ok_to_go = cell_not_taken && in_board;
         }
         else
         {
-            cout << "Impossible de bouger le vehicule" << endl;
+            // même chose que le 1er cas, seul la direction traité change.
+            bool front_is_free = ((v.getPositionRow() + (v.getLength() - 1) + pas != vehicules[j].getPositionRow()) &&
+                                  (v.getPositionCol() != vehicules[j].getPositionCol()));
+            bool back_is_free = ((v.getPositionRow() + (v.getLength() - 1) + pas != vehicules[j].getPositionRow() + (vehicules[j].getLength() - 1)) &&
+                                 (v.getPositionCol() != vehicules[j].getPositionCol() + (vehicules[j].getLength() - 1)));
+            bool cell_not_taken = front_is_free || back_is_free;
+
+            bool in_board = (v.getPositionRow() + (v.getLength() - 1) + pas < TAILLE);
+            ok_to_go = cell_not_taken && in_board;
         }
-        if (ok_to_go)
-            moveCount++;
+        if (!ok_to_go)
+            break;
+    }
+    if (ok_to_go)
+    {
+        v.moveForwardToDir(pas);
+        moveCount++;
+    }
+}
+
+void plateau::moveVehiculeB(vehicule &v, int pas)
+{
+    // la même chose que dans moveVehiculeF mais on recule au lieu d'avancer.
+    bool ok_to_go;
+    for (int j = 0; j < vehicules.size(); j++)
+    {
+        if (v.getDirection())
+        {
+            bool front_is_free = ((v.getPositionCol() - pas != vehicules[j].getPositionCol()) &&
+                                  (v.getPositionRow() != vehicules[j].getPositionRow()));
+            bool back_is_free = ((v.getPositionCol() - pas != vehicules[j].getPositionCol() + (vehicules[j].getLength() - 1)) &&
+                                 (v.getPositionRow() != vehicules[j].getPositionRow() + (vehicules[j].getLength() - 1)));
+            bool cell_not_taken = front_is_free || back_is_free;
+
+            bool in_board = (v.getPositionCol() - pas > 0);
+            ok_to_go = cell_not_taken && in_board;
+        }
+        else
+        {
+            bool front_is_free = ((v.getPositionRow() - pas != vehicules[j].getPositionRow()) &&
+                                  (v.getPositionCol() != vehicules[j].getPositionCol()));
+            bool back_is_free = ((v.getPositionRow() - pas != vehicules[j].getPositionRow() + (vehicules[j].getLength() - 1)) &&
+                                 (v.getPositionCol() != vehicules[j].getPositionCol() + (vehicules[j].getLength() - 1)));
+            bool cell_not_taken = front_is_free || back_is_free;
+
+            bool in_board = (v.getPositionRow() - pas > 0);
+            ok_to_go = cell_not_taken && in_board;
+        }
+        if (!ok_to_go)
+            break;
+    }
+    if (ok_to_go)
+    {
+        v.moveBackwardToDir(pas);
+        moveCount++;
+    }
+}
+
+void plateau::moveVehicule(vehicule &v, bool dir, int pas)
+{
+
+    if (dir)
+    {
+        moveVehiculeF(v, pas);
     }
     else
     {
-        for (int j = 0; j < vehicules.size(); j++)
-        {
-            if (v != vehicules[j])
-            {
-                if (v.getDirection())
-                {
-                    ok_to_go = v.getPositionCol() - pas != vehicules[j].getPositionCol() + vehicules[j].getLength() && v.getPositionRow() != vehicules[j].getPositionRow() && v.getPositionCol() - pas > 0 && v.getPositionRow() > 0;
-                }
-                else
-                {
-                    ok_to_go = v.getPositionRow() - pas != vehicules[j].getPositionRow() + vehicules[j].getLength() && v.getPositionCol() != vehicules[j].getPositionCol() && v.getPositionRow() - pas > 0 && v.getPositionCol() > 0;
-                }
-                if (!ok_to_go)
-                    break;
-            }
-        }
-        if (ok_to_go)
-        {
-            v.moveBackwardToDir(pas);
-            moveCount++;
-        }
-        else
-        {
-            cout << "Impossible de bouger le vehicule" << endl;
-        }
-        if (ok_to_go)
-            moveCount++;
+        moveVehiculeB(v, pas);
     }
     cout << "Move count: " << moveCount << endl;
 }

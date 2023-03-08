@@ -34,6 +34,8 @@ public:
     /*! \param dir true pour avancer false pour reculer*/
     /*! \param pas entier désignant le nombre de case parcouru lors du déplacement*/
     void moveVehicule(vehicule &v, bool dir, int pas);
+    void moveVehiculeF(vehicule &v, int pas);
+    void moveVehiculeB(vehicule &v, int pas);
     void play();
 
     /* Getters et Setters */
