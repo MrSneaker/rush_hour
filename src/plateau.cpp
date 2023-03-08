@@ -4,6 +4,7 @@
 plateau::plateau()
 {
     initBoard();
+    moveCount = 0;
 }
 
 plateau::~plateau()
@@ -88,49 +89,58 @@ void plateau::displayBoard()
          << endl;
 }
 
-void plateau::moveVehicule(vehicule &v, bool dir)
+void plateau::moveVehicule(vehicule &v, bool dir, int pas)
 {
     bool ok_to_go = false;
     if (dir)
     {
-        if (v.getDirection())
-            ok_to_go = board[v.getPositionRow()][v.getPositionCol() + v.getLength()] == '.';
-        else
-            ok_to_go = board[v.getPositionRow() + v.getLength()][v.getPositionCol()] == '.';
-
-        if (ok_to_go)
+        for (int i = 0; i < pas; i++)
         {
-            v.moveForwardToDir();
-            // moveCount++;
+            for (int j = 0; j < vehicules.size(); j++)
+                if (v.getDirection())
+                    ok_to_go = board[v.getPositionRow()][v.getPositionCol() + v.getLength()];
+                else
+                    ok_to_go = board[v.getPositionRow() + v.getLength()][v.getPositionCol()] == '.';
+
+            if (ok_to_go)
+            {
+                v.moveForwardToDir();
+            }
         }
+        if (ok_to_go)
+            moveCount++;
     }
     else
     {
-        if (v.getDirection())
-            ok_to_go = board[v.getPositionRow()][v.getPositionCol() - 1] == '.';
-        else
-            ok_to_go = board[v.getPositionRow() - 1][v.getPositionCol()] == '.';
-
-        if (ok_to_go)
+        for (int i = 0; i < pas; i++)
         {
-            v.moveBackwardToDir();
-            // moveCount++;
+            if (v.getDirection())
+                ok_to_go = board[v.getPositionRow()][v.getPositionCol() - 1] == '.';
+            else
+                ok_to_go = board[v.getPositionRow() - 1][v.getPositionCol()] == '.';
+
+            if (ok_to_go)
+            {
+                v.moveBackwardToDir();
+            }
         }
+        if (ok_to_go)
+            moveCount++;
     }
     cout << "Move count: " << moveCount << endl;
 }
 
 void plateau::play()
 {
-    moveVehicule(vehicules[1], false);
+    moveVehicule(vehicules[1], false, 1);
     displayBoard();
-    moveVehicule(vehicules[1], true);
+    moveVehicule(vehicules[1], true, 2);
     displayBoard();
-    moveVehicule(vehicules[1], true);
+    moveVehicule(vehicules[1], true, 1);
     displayBoard();
-    moveVehicule(vehicules[1], true);
+    moveVehicule(vehicules[1], true, 1);
     displayBoard();
-    moveVehicule(vehicules[1], false);
+    moveVehicule(vehicules[1], false, 1);
     displayBoard();
 }
 

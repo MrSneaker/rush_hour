@@ -32,7 +32,8 @@ public:
     void displayBoard();
     /*! \brief bouge le vehicule dans la direction indiquée en paramètre si c'est possible.*/
     /*! \param dir true pour avancer false pour reculer*/
-    void moveVehicule(vehicule &v, bool dir);
+    /*! \param pas entier désignant le nombre de case parcouru lors du déplacement*/
+    void moveVehicule(vehicule &v, bool dir, int pas);
     void play();
 
     /* Getters et Setters */
