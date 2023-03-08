@@ -52,26 +52,31 @@ void vehicule::setDirection(bool orientation)
     this->direction = orientation;
 }
 
-void vehicule::moveForwardToDir()
+void vehicule::moveForwardToDir(int pas)
 {
     if (direction == true) // si horizontal
     {
-        setPositionCol(this->positionCol + 1);
+        setPositionCol(this->positionCol + pas);
     }
     else // si vertical
     {
-        setPositionRow(this->positionRow + 1);
+        setPositionRow(this->positionRow + pas);
     }
 }
 
-void vehicule::moveBackwardToDir()
+void vehicule::moveBackwardToDir(int pas)
 {
     if (direction == true) // si horizontal
     {
-        setPositionCol(this->positionCol - 1);
+        setPositionCol(this->positionCol - pas);
     }
     else // si vertical
     {
-        setPositionRow(this->positionRow - 1);
+        setPositionRow(this->positionRow - pas);
     }
+}
+
+bool vehicule::operator!=(const vehicule &v) const
+{
+    return this->length != v.length && this->positionCol != v.positionCol && this->positionRow != v.positionRow && this->direction != v.direction;
 }

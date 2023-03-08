@@ -5,6 +5,12 @@ plateau::plateau()
 {
     initBoard();
     moveCount = 0;
+    exitRow = 0;
+    exitCol = 0;
+    vehiculRowStart = 0;
+    vehiculColStart = 0;
+    VehicleLength = 0;
+    vehiculDirection = false;
 }
 
 plateau::~plateau()
@@ -53,6 +59,7 @@ void plateau::displayBoard()
         {
             if (v.getDirection())
             {
+
                 board[v.getPositionRow()][v.getPositionCol() + j] = symbol;
             }
             else
@@ -78,7 +85,20 @@ void plateau::displayBoard()
             else if (board[i][j] == 'E')
                 cout << "\033[1;32m";
             else
-                cout << "\033[0m";
+                for (int k = 0; k < vehicules.size(); k++)
+                {
+                    // si c'est la position de départ du vehicule
+                    if (vehicules[k].getPositionRow() == i && vehicules[k].getPositionCol() == j)
+                    {
+                        cout << "\033[1;34m";
+                        break;
+                    }
+                    else
+                    {
+                        cout << "\033[0m";
+                    }
+                }
+
             cout << board[i][j] << "      ";
         }
         cout << endl
@@ -94,35 +114,62 @@ void plateau::moveVehicule(vehicule &v, bool dir, int pas)
     bool ok_to_go = false;
     if (dir)
     {
-        for (int i = 0; i < pas; i++)
+        for (int j = 0; j < vehicules.size(); j++)
         {
-            for (int j = 0; j < vehicules.size(); j++)
-                if (v.getDirection())
-                    ok_to_go = board[v.getPositionRow()][v.getPositionCol() + v.getLength()];
-                else
-                    ok_to_go = board[v.getPositionRow() + v.getLength()][v.getPositionCol()] == '.';
-
-            if (ok_to_go)
+            if (v != vehicules[j])
             {
-                v.moveForwardToDir();
+                if (v.getDirection())
+                {
+                    ok_to_go = v.getPositionCol() + v.getLength() + pas != vehicules[j].getPositionCol() && v.getPositionRow() != vehicules[j].getPositionRow() && v.getPositionCol() + v.getLength() + pas <= TAILLE;
+                }
+                else
+                {
+                    ok_to_go = v.getPositionRow() + v.getLength() + pas != vehicules[j].getPositionRow() && v.getPositionCol() != vehicules[j].getPositionCol() && v.getPositionRow() + v.getLength() + pas <= TAILLE;
+                }
+                if (!ok_to_go)
+                    break;
             }
+        }
+        cout << "ok_to_go: " << ok_to_go << endl;
+        cout << "pas: " << pas << endl;
+        if (ok_to_go)
+        {
+            v.moveForwardToDir(pas);
+            moveCount++;
+        }
+        else
+        {
+            cout << "Impossible de bouger le vehicule" << endl;
         }
         if (ok_to_go)
             moveCount++;
     }
     else
     {
-        for (int i = 0; i < pas; i++)
+        for (int j = 0; j < vehicules.size(); j++)
         {
-            if (v.getDirection())
-                ok_to_go = board[v.getPositionRow()][v.getPositionCol() - 1] == '.';
-            else
-                ok_to_go = board[v.getPositionRow() - 1][v.getPositionCol()] == '.';
-
-            if (ok_to_go)
+            if (v != vehicules[j])
             {
-                v.moveBackwardToDir();
+                if (v.getDirection())
+                {
+                    ok_to_go = v.getPositionCol() - pas != vehicules[j].getPositionCol() + vehicules[j].getLength() && v.getPositionRow() != vehicules[j].getPositionRow() && v.getPositionCol() - pas > 0 && v.getPositionRow() > 0;
+                }
+                else
+                {
+                    ok_to_go = v.getPositionRow() - pas != vehicules[j].getPositionRow() + vehicules[j].getLength() && v.getPositionCol() != vehicules[j].getPositionCol() && v.getPositionRow() - pas > 0 && v.getPositionCol() > 0;
+                }
+                if (!ok_to_go)
+                    break;
             }
+        }
+        if (ok_to_go)
+        {
+            v.moveBackwardToDir(pas);
+            moveCount++;
+        }
+        else
+        {
+            cout << "Impossible de bouger le vehicule" << endl;
         }
         if (ok_to_go)
             moveCount++;
@@ -143,6 +190,7 @@ void plateau::play()
     moveVehicule(vehicules[1], false, 1);
     displayBoard();
 }
+//------------------------------------------------------------------------------
 
 int plateau::getExitRow()
 {
