@@ -1,4 +1,4 @@
-#include "plateau.h"
+#include "plateau.hpp"
 #include <assert.h>
 
 plateau::plateau()
@@ -119,28 +119,28 @@ void plateau::moveVehiculeF(vehicule &v, int pas)
             // vérifie qu'il n'y ai pas collision entre la position de tête du vehicule[j] et la position future voulue par v.
             // la position de tête correspond à la position sans prise en compte de la longueur.
             // = 1 si libre, 0 sinon.
-            bool front_is_free = ((v.getPositionCol() + (v.getLength() - 1) + pas != vehicules[j].getPositionCol()) &&
-                                  (v.getPositionRow() != vehicules[j].getPositionRow()));
+            bool front_not_free = ((v.getPositionCol() + (v.getLength() - 1) + pas >= vehicules[j].getPositionCol()) &&
+                                   (v.getPositionRow() >= vehicules[j].getPositionRow()));
             // même chose mais en prenant en compte la longueur.
-            bool back_is_free = ((v.getPositionCol() + (v.getLength() - 1) + pas != vehicules[j].getPositionCol() + (vehicules[j].getLength() - 1)) &&
-                                 (v.getPositionRow() != vehicules[j].getPositionRow() + (vehicules[j].getLength() - 1)));
-            bool cell_not_taken = front_is_free || back_is_free;
+            bool back_not_free = ((v.getPositionCol() + (v.getLength() - 1) + pas <= vehicules[j].getPositionCol() + (vehicules[j].getLength() - 1)) &&
+                                  (v.getPositionRow() <= vehicules[j].getPositionRow() + (vehicules[j].getLength() - 1)));
+            bool cell_taken = front_not_free && back_not_free;
 
             // test si on est dans le cadre ou non.
             bool in_board = (v.getPositionCol() + (v.getLength() - 1) + pas < TAILLE);
-            ok_to_go = cell_not_taken && in_board;
+            ok_to_go = !cell_taken && in_board;
         }
         else
         {
             // même chose que le 1er cas, seul la direction traité change.
-            bool front_is_free = ((v.getPositionRow() + (v.getLength() - 1) + pas != vehicules[j].getPositionRow()) &&
-                                  (v.getPositionCol() != vehicules[j].getPositionCol()));
-            bool back_is_free = ((v.getPositionRow() + (v.getLength() - 1) + pas != vehicules[j].getPositionRow() + (vehicules[j].getLength() - 1)) &&
-                                 (v.getPositionCol() != vehicules[j].getPositionCol() + (vehicules[j].getLength() - 1)));
-            bool cell_not_taken = front_is_free || back_is_free;
+            bool front_not_free = ((v.getPositionRow() + (v.getLength() - 1) + pas >= vehicules[j].getPositionRow()) &&
+                                   (v.getPositionCol() >= vehicules[j].getPositionCol()));
+            bool back_not_free = ((v.getPositionRow() + (v.getLength() - 1) + pas <= vehicules[j].getPositionRow() + (vehicules[j].getLength() - 1)) &&
+                                  (v.getPositionCol() <= vehicules[j].getPositionCol() + (vehicules[j].getLength() - 1)));
+            bool cell_taken = front_not_free && back_not_free;
 
             bool in_board = (v.getPositionRow() + (v.getLength() - 1) + pas < TAILLE);
-            ok_to_go = cell_not_taken && in_board;
+            ok_to_go = !cell_taken && in_board;
         }
         if (!ok_to_go)
             break;
@@ -160,25 +160,25 @@ void plateau::moveVehiculeB(vehicule &v, int pas)
     {
         if (v.getDirection())
         {
-            bool front_is_free = ((v.getPositionCol() - pas != vehicules[j].getPositionCol()) &&
-                                  (v.getPositionRow() != vehicules[j].getPositionRow()));
-            bool back_is_free = ((v.getPositionCol() - pas != vehicules[j].getPositionCol() + (vehicules[j].getLength() - 1)) &&
-                                 (v.getPositionRow() != vehicules[j].getPositionRow() + (vehicules[j].getLength() - 1)));
-            bool cell_not_taken = front_is_free || back_is_free;
+            bool front_not_free = ((v.getPositionCol() - pas >= vehicules[j].getPositionCol()) &&
+                                   (v.getPositionRow() >= vehicules[j].getPositionRow()));
+            bool back_not_free = ((v.getPositionCol() - pas <= vehicules[j].getPositionCol() + (vehicules[j].getLength() - 1)) &&
+                                  (v.getPositionRow() <= vehicules[j].getPositionRow() + (vehicules[j].getLength() - 1)));
+            bool cell_taken = front_not_free && back_not_free;
 
             bool in_board = (v.getPositionCol() - pas > 0);
-            ok_to_go = cell_not_taken && in_board;
+            ok_to_go = !cell_taken && in_board;
         }
         else
         {
-            bool front_is_free = ((v.getPositionRow() - pas != vehicules[j].getPositionRow()) &&
-                                  (v.getPositionCol() != vehicules[j].getPositionCol()));
-            bool back_is_free = ((v.getPositionRow() - pas != vehicules[j].getPositionRow() + (vehicules[j].getLength() - 1)) &&
-                                 (v.getPositionCol() != vehicules[j].getPositionCol() + (vehicules[j].getLength() - 1)));
-            bool cell_not_taken = front_is_free || back_is_free;
+            bool front_not_free = ((v.getPositionRow() - pas >= vehicules[j].getPositionRow()) &&
+                                   (v.getPositionCol() >= vehicules[j].getPositionCol()));
+            bool back_not_free = ((v.getPositionRow() - pas <= vehicules[j].getPositionRow() + (vehicules[j].getLength() - 1)) &&
+                                  (v.getPositionCol() <= vehicules[j].getPositionCol() + (vehicules[j].getLength() - 1)));
+            bool cell_taken = front_not_free && back_not_free;
 
             bool in_board = (v.getPositionRow() - pas > 0);
-            ok_to_go = cell_not_taken && in_board;
+            ok_to_go = !cell_taken && in_board;
         }
         if (!ok_to_go)
             break;
@@ -210,11 +210,11 @@ void plateau::play()
     displayBoard();
     moveVehicule(vehicules[1], true, 2);
     displayBoard();
-    moveVehicule(vehicules[1], true, 1);
+    moveVehicule(vehicules[6], true, 1);
     displayBoard();
-    moveVehicule(vehicules[1], true, 1);
+    moveVehicule(vehicules[6], true, 1);
     displayBoard();
-    moveVehicule(vehicules[1], false, 1);
+    moveVehicule(vehicules[6], false, 1);
     displayBoard();
 }
 //------------------------------------------------------------------------------

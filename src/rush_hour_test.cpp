@@ -1,4 +1,4 @@
-#include "plateau.h"
+#include "plateau.hpp"
 
 int main()
 {
@@ -6,8 +6,6 @@ int main()
     plateau p;
     p.displayBoard();
     p.play();
-
-
 
     return 0;
 }
