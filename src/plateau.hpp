@@ -12,12 +12,18 @@
 
 using namespace std;
 
+struct board_state_struct
+{
+    bool board_state[TAILLE][TAILLE];
+};
+
 class plateau
 {
 
 private:
     vector<vehicule> vehicules;
     char board[TAILLE][TAILLE];
+    board_state_struct states;
     int exitRow;
     int exitCol;
     int vehiculRowStart, vehiculColStart, VehicleLength;
@@ -33,9 +39,9 @@ public:
     /*! \brief bouge le vehicule dans la direction indiquée en paramètre si c'est possible.*/
     /*! \param dir true pour avancer false pour reculer*/
     /*! \param pas entier désignant le nombre de case parcouru lors du déplacement*/
-    void moveVehicule(vehicule &v, bool dir, int pas);
-    void moveVehiculeF(vehicule &v, int pas);
-    void moveVehiculeB(vehicule &v, int pas);
+    bool moveVehicule(vehicule &v, bool dir, int pas);
+    bool moveVehiculeF(vehicule &v, int pas);
+    bool moveVehiculeB(vehicule &v, int pas);
     void play();
 
     /* Getters et Setters */
@@ -61,6 +67,7 @@ public:
     void setVehiculDirection(bool vehiculDirection);
 
     vector<vehicule> getVehicules();
+    board_state_struct getBoardState();
     char getBoard(int row, int col);
 };
 
