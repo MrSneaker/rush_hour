@@ -1,23 +1,21 @@
-#ifndef GRAPHE_H
-#define GRAPHE_H
+#ifndef GRAPHE_HPP
+#define GRAPHE_HPP
 
+#include <queue>
 #include <vector>
+#include "State.hpp"
 
 using namespace std;
 
 class Graphe
 {
 private:
-    struct Cell
-    {
-        int node;
-        vector<int *> front;
-        vector<int *> back;
-    };
+    queue<State> queue;
 
 public:
     Graphe(/* args */);
     ~Graphe();
+    void BreadthFirstSearch(std::vector<State> G, int start);
 };
 
 #endif

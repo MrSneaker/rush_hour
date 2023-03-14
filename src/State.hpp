@@ -7,10 +7,12 @@
 class State
 {
 private:
-    // tableau de plateau
-    vector<plateau> tab_p;
+    plateau new_p;
 
 public:
+    vector<State> neighbour;
+    bool isVisited;
+    int ind;
     State(plateau init);
     ~State();
     void possible_play();
