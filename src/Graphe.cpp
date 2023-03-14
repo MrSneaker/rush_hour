@@ -12,20 +12,20 @@ void Graphe::BreadthFirstSearch(std::vector<State> G, int start)
 {
     for (int i = 0; i < G.size(); i++)
     {
-        G[i].isVisited = false;
+        G[i].setIsVisited(false);
     }
     queue.push(G[start]);
 
-    G[start].isVisited = true;
+    G[start].setIsVisited(true);
 
     while (!queue.empty())
     {
         State current = queue.front();
-        for (auto neighbour : current.neighbour)
+        for (auto neighbour : current.getNeighbors())
         {
-            if (!neighbour.isVisited)
+            if (!neighbour.getIsVisited())
             {
-                neighbour.isVisited = true;
+                neighbour.setIsVisited(true);
                 queue.push(neighbour);
             }
         }
