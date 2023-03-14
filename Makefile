@@ -1,14 +1,17 @@
 all : bin/rush_hour_test 
 
 
-bin/rush_hour_test : obj/rush_hour_test.o obj/plateau.o obj/vehicule.o obj/State.o
-	g++ -o bin/rush_hour_test obj/rush_hour_test.o obj/plateau.o obj/vehicule.o obj/State.o -ggdb
+bin/rush_hour_test : obj/rush_hour_test.o obj/plateau.o obj/vehicule.o obj/State.o obj/Graphe.o
+	g++ -o bin/rush_hour_test obj/rush_hour_test.o obj/plateau.o obj/vehicule.o obj/State.o obj/Graphe.o -ggdb
 	
 obj/rush_hour_test.o : src/rush_hour_test.cpp 
 	g++ -c -o obj/rush_hour_test.o src/rush_hour_test.cpp -ggdb
 
 obj/State.o : src/State.cpp src/State.hpp src/plateau.hpp
 	g++ -c -o obj/State.o src/State.cpp -ggdb
+
+obj/Graphe.o : src/Graphe.cpp src/Graphe.hpp src/State.hpp
+	g++ -c -o obj/Graphe.o src/Graphe.cpp -ggdb
 
 obj/plateau.o : src/plateau.cpp src/plateau.hpp src/vehicule.hpp
 	g++ -c -o obj/plateau.o src/plateau.cpp -ggdb

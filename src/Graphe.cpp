@@ -8,27 +8,29 @@ Graphe::~Graphe()
 {
 }
 
-void Graphe::BreadthFirstSearch(std::vector<State> G, int start)
+void Graphe::breadthFirstSearch(State s)
 {
-    for (int i = 0; i < G.size(); i++)
-    {
-        G[i].setIsVisited(false);
-    }
-    queue.push(G[start]);
+    // for (int i = 0; i < G.size(); i++)
+    // {
+    //     G[i].setIsVisited(false);
+    // }
+    q.push(s);
 
-    G[start].setIsVisited(true);
+    s.setIsVisited(true);
 
-    while (!queue.empty())
+    while (!q.empty())
     {
-        State current = queue.front();
+        State current = q.front();
+        current.makeNeighbor();
         for (auto neighbour : current.getNeighbors())
         {
             if (!neighbour.getIsVisited())
             {
                 neighbour.setIsVisited(true);
-                queue.push(neighbour);
+                // neighbour.getBoard().displayBoard();
+                q.push(neighbour);
             }
         }
-        queue.pop();
+        q.pop();
     }
 }

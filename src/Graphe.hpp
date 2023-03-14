@@ -10,12 +10,12 @@ using namespace std;
 class Graphe
 {
 private:
-    queue<State> queue;
+    queue<State> q;
 
 public:
     Graphe(/* args */);
     ~Graphe();
-    void BreadthFirstSearch(std::vector<State> G, int start);
+    void breadthFirstSearch(State G);
 };
 
 #endif

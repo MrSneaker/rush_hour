@@ -13,6 +13,18 @@ plateau::plateau()
     vehiculDirection = false;
 }
 
+plateau::plateau(vector<vehicule> vehicules, int exitRow, int exitCol, int vehiculRowStart, int vehiculColStart, int VehicleLength, bool vehiculDirection, int moveCount)
+{
+    this->vehicules = vehicules;
+    this->exitRow = exitRow;
+    this->exitCol = exitCol;
+    this->vehiculRowStart = vehiculRowStart;
+    this->vehiculColStart = vehiculColStart;
+    this->VehicleLength = VehicleLength;
+    this->vehiculDirection = vehiculDirection;
+    this->moveCount = moveCount;
+}
+
 plateau::~plateau()
 {
 }
@@ -114,7 +126,7 @@ void plateau::displayBoard()
          << endl;
 }
 
-bool plateau::moveVehiculeF(vehicule &v, int pas)
+bool plateau::moveVehiculeF(vehicule &v, int pas, bool effective)
 {
     bool ok_to_go;
     for (int j = 0; j < vehicules.size(); j++)
@@ -150,7 +162,7 @@ bool plateau::moveVehiculeF(vehicule &v, int pas)
         if (!ok_to_go)
             break;
     }
-    if (ok_to_go)
+    if (ok_to_go && effective)
     {
         v.moveForwardToDir(pas);
         states.board_state[v.getPositionRow()][v.getPositionCol()] = true;
@@ -159,10 +171,25 @@ bool plateau::moveVehiculeF(vehicule &v, int pas)
     return ok_to_go;
 }
 
-bool plateau::moveVehiculeB(vehicule &v, int pas)
+bool plateau::moveVehiculeB(vehicule &v, int pas, bool effective)
 {
     // la même chose que dans moveVehiculeF mais on recule au lieu d'avancer.
-    bool ok_to_go;
+    bool ok_to_go = false;
+    // int l = v.getPositionRow();
+    // int c = v.getPositionCol();
+    // if (v.getDirection()) // horizontal
+    // {
+    //     c -= 1;
+    //     while (c >= c - pas)
+    //     {
+    //         c -= 1;
+    //     }
+    // }
+    // else // vertical
+    // {
+    //     l -= pas;
+    // }
+
     for (int j = 0; j < vehicules.size(); j++)
     {
         if (v.getDirection())
@@ -190,7 +217,7 @@ bool plateau::moveVehiculeB(vehicule &v, int pas)
         if (!ok_to_go)
             break;
     }
-    if (ok_to_go)
+    if (ok_to_go && effective)
     {
         v.moveBackwardToDir(pas);
         states.board_state[v.getPositionRow()][v.getPositionCol()] = true;
@@ -199,16 +226,16 @@ bool plateau::moveVehiculeB(vehicule &v, int pas)
     return ok_to_go;
 }
 
-bool plateau::moveVehicule(vehicule &v, bool dir, int pas)
+bool plateau::moveVehicule(vehicule &v, bool dir, int pas, bool effective)
 {
     bool move_ok;
     if (dir)
     {
-        move_ok = moveVehiculeF(v, pas);
+        move_ok = moveVehiculeF(v, pas, effective);
     }
     else
     {
-        move_ok = moveVehiculeB(v, pas);
+        move_ok = moveVehiculeB(v, pas, effective);
     }
     cout << "Move count: " << moveCount << endl;
     return move_ok;
@@ -216,15 +243,15 @@ bool plateau::moveVehicule(vehicule &v, bool dir, int pas)
 
 void plateau::play()
 {
-    moveVehicule(vehicules[1], false, 1);
+    moveVehicule(vehicules[1], false, 1, true);
     displayBoard();
-    moveVehicule(vehicules[1], true, 2);
+    moveVehicule(vehicules[1], true, 2, true);
     displayBoard();
-    moveVehicule(vehicules[6], true, 1);
+    moveVehicule(vehicules[6], true, 1, true);
     displayBoard();
-    moveVehicule(vehicules[6], true, 1);
+    moveVehicule(vehicules[6], true, 1, true);
     displayBoard();
-    moveVehicule(vehicules[6], false, 1);
+    moveVehicule(vehicules[6], false, 1, true);
     displayBoard();
 }
 //------------------------------------------------------------------------------
@@ -289,9 +316,14 @@ void plateau::setVehiculDirection(bool vehiculDirection)
     vehiculDirection = vehiculDirection;
 }
 
-vector<vehicule> plateau::getVehicules()
+vector<vehicule> &plateau::getVehicules()
 {
     return vehicules;
+}
+
+void plateau::setVehicules(vector<vehicule> vehicules)
+{
+    this->vehicules = vehicules;
 }
 
 board_state_struct plateau::getBoardState()
@@ -302,4 +334,9 @@ board_state_struct plateau::getBoardState()
 char plateau::getBoard(int row, int col)
 {
     return board[row][col];
+}
+
+int plateau::getMoveCount()
+{
+    return moveCount;
 }

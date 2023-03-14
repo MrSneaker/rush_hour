@@ -32,6 +32,7 @@ private:
 
 public:
     plateau();
+    plateau(vector<vehicule> vehicules, int exitRow, int exitCol, int vehiculRowStart, int vehiculColStart, int VehicleLength, bool vehiculDirection, int moveCount);
     ~plateau();
 
     void initBoard();
@@ -39,9 +40,10 @@ public:
     /*! \brief bouge le vehicule dans la direction indiquée en paramètre si c'est possible.*/
     /*! \param dir true pour avancer false pour reculer*/
     /*! \param pas entier désignant le nombre de case parcouru lors du déplacement*/
-    bool moveVehicule(vehicule &v, bool dir, int pas);
-    bool moveVehiculeF(vehicule &v, int pas);
-    bool moveVehiculeB(vehicule &v, int pas);
+    /*! \param effective bool permettant de réaliser un mouvement effectif ou juste un test*/
+    bool moveVehicule(vehicule &v, bool dir, int pas, bool effective);
+    bool moveVehiculeF(vehicule &v, int pas, bool effective);
+    bool moveVehiculeB(vehicule &v, int pas, bool effective);
     void play();
 
     /* Getters et Setters */
@@ -66,7 +68,8 @@ public:
     bool getVehiculDirection();
     void setVehiculDirection(bool vehiculDirection);
 
-    vector<vehicule> getVehicules();
+    vector<vehicule> &getVehicules();
+    void setVehicules(vector<vehicule> vehicules);
     board_state_struct getBoardState();
     char getBoard(int row, int col);
 };
