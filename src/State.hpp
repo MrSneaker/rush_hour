@@ -7,13 +7,32 @@
 class State
 {
 private:
-    // tableau de plateau
-    vector<plateau> tab_p;
+    bool isVisited;          // true si l'état a déjà été visité
+    vector<State> neighbors; // liste des états voisins
+    State *parent;           // pointeur vers l'état parent
+    int cost;                // nombre de coup pour arriver à cet état
+
+    plateau *board; // plateau de jeu
 
 public:
-    State(plateau init);
+    State();
     ~State();
-    void possible_play();
-};
 
-#endif
+    /* Getters et Setters */
+    bool getIsVisited();
+    void setIsVisited(bool isVisited);
+
+    State *getParent();
+    void setParent(State *parent);
+
+    int getCost();
+    void setCost(int cost);
+
+    plateau *getBoard();
+    void setBoard(plateau *board);
+
+    vector<State> getNeighbors();
+
+    /* Méthodes */
+    addNeighbor(State neighbor);
+};

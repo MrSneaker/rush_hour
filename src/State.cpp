@@ -1,34 +1,63 @@
 #include "State.hpp"
+#include <assert.h>
 
-State::State(plateau init)
+State::State()
 {
-    tab_p.push_back(init);
+    isVisited = false;
+    parent = nullptr;
+    cost = 0;
 }
 
 State::~State()
 {
 }
 
-void State::possible_play()
+bool State::getIsVisited()
 {
-    bool backward = false;
-    bool forward = true;
-    if (tab_p.empty())
-        std::cout << "ya un souci mon reuf" << std::endl;
-    else
-    {
-        for (int j = 0; tab_p[0].getVehicules().size(); j++)
-        {
-            vehicule v = tab_p[0].getVehicules()[j];
-            int pas = 1;
-            while (tab_p[0].moveVehicule(v, forward, pas) || tab_p[0].moveVehicule(v, backward, pas))
-            {
-                std::vector<vehicule> new_state(tab_p[0].getVehicules().size());
-                new_state[j] = v;
-                plateau new_p;
-                new_p; // faire
-                break; // on sort de la fonction une fois qu'on a
-            }
-        }
-    }
+    return isVisited;
+}
+
+void State::setIsVisited(bool isVisited)
+{
+    this->isVisited = isVisited;
+}
+
+State *State::getParent()
+{
+    return parent;
+}
+
+void State::setParent(State *parent)
+{
+    this->parent = parent;
+}
+
+int State::getCost()
+{
+    return cost;
+}
+
+void State::setCost(int cost)
+{
+    this->cost = cost;
+}
+
+plateau *State::getBoard()
+{
+    return board;
+}
+
+void State::setBoard(plateau *board)
+{
+    this->board = board;
+}
+
+vector<State> State::getNeighbors()
+{
+    return neighbors;
+}
+
+void State::addNeighbor(State neighbor)
+{
+    neighbors.push_back(neighbor);
 }
