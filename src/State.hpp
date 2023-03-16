@@ -18,6 +18,8 @@ public:
     State();
     ~State();
 
+    bool operator==(const State &s) const;
+
     /* Getters et Setters */
     bool getIsVisited();
     void setIsVisited(bool isVisited);
@@ -27,8 +29,7 @@ public:
 
     int getCost();
     void setCost(int cost);
-
-    plateau getBoard();
+    const plateau &getBoard() const;
     void setBoard(const plateau &board);
 
     vector<State> getNeighbors();

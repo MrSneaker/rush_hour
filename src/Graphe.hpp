@@ -2,6 +2,7 @@
 #define GRAPHE_HPP
 
 #include <queue>
+#include <set>
 #include <vector>
 #include "State.hpp"
 

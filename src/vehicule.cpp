@@ -12,7 +12,7 @@ vehicule::~vehicule()
 {
 }
 
-int vehicule::getLength()
+const int &vehicule::getLength() const
 {
     return this->length;
 }
@@ -22,7 +22,7 @@ void vehicule::setLength(int longueur)
     this->length = longueur;
 }
 
-int vehicule::getPositionCol()
+const int &vehicule::getPositionCol() const
 {
     return this->positionCol;
 }
@@ -32,7 +32,7 @@ void vehicule::setPositionCol(int positionCol)
     this->positionCol = positionCol;
 }
 
-int vehicule::getPositionRow()
+const int &vehicule::getPositionRow() const
 {
     return this->positionRow;
 }
@@ -42,7 +42,7 @@ void vehicule::setPositionRow(int positionRow)
     this->positionRow = positionRow;
 }
 
-bool vehicule::getDirection()
+const bool &vehicule::getDirection() const
 {
     return this->direction;
 }
@@ -79,4 +79,9 @@ void vehicule::moveBackwardToDir(int pas)
 bool vehicule::operator!=(const vehicule &v) const
 {
     return this->length != v.length && this->positionCol != v.positionCol && this->positionRow != v.positionRow && this->direction != v.direction;
+}
+
+bool vehicule::operator==(const vehicule &v) const
+{
+    return this->length == v.length && this->positionCol == v.positionCol && this->positionRow == v.positionRow && this->direction == v.direction;
 }

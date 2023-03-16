@@ -21,16 +21,16 @@ public:
 
     // --- Getters & Setters ---
 
-    int getLength();
+    const int &getLength() const;
     void setLength(int length);
 
-    int getPositionCol();
+    const int &getPositionCol() const;
     void setPositionCol(int positionCol);
 
-    int getPositionRow();
+    const int &getPositionRow() const;
     void setPositionRow(int positionRow);
 
-    bool getDirection();
+    const bool &getDirection() const;
     void setDirection(bool direction);
 
     void moveForwardToDir(int pas);
@@ -38,6 +38,7 @@ public:
 
     // surcharge de l'opérateur ==
     bool operator!=(const vehicule &v) const;
+    bool operator==(const vehicule &v) const;
 };
 
 #endif // _VEHICULE_H__

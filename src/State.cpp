@@ -12,6 +12,11 @@ State::~State()
 {
 }
 
+bool State::operator==(const State &s) const
+{
+    return (s.board == this->board);
+}
+
 bool State::getIsVisited()
 {
     return isVisited;
@@ -42,7 +47,7 @@ void State::setCost(int cost)
     this->cost = cost;
 }
 
-plateau State::getBoard()
+const plateau &State::getBoard() const
 {
     return board;
 }
@@ -87,7 +92,7 @@ void State::makeNeighbor()
                 {
                     new_states_vehicules.push_back(this->board.getVehicules()[i]);
                 }
-                plateau neighbor_board(new_states_vehicules, this->board.getExitRow(), this->board.getExitCol(), this->board.getVehiculRowStart(), this->board.getVehiculColStart(), this->board.getVehicleLength(), this->board.getVehiculDirection(), this->board.getMoveCount());
+                plateau neighbor_board(new_states_vehicules, this->board.getExitRow(), this->board.getExitCol(), this->board.getVehiculRowStart(), this->board.getVehiculColStart(), this->board.getVehicleLength(), this->board.getVehiculDirection(), this->board.getMoveCount(), this->board.getBoardState());
                 // cout << "test avant: " << endl;
                 // neighbor_board.displayBoard();
                 // cout << "pos new v avant: " << neighbor_board.getVehicules()[i].getPositionRow() << " - " << neighbor_board.getVehicules()[i].getPositionCol() << endl;
@@ -100,6 +105,7 @@ void State::makeNeighbor()
                 // cout << "i : " << i << endl;
                 // neighbor_state.board.displayBoard();
                 neighbors.push_back(neighbor_state);
+                // cout << "neighbor isVisited : " << neighbors.back().isVisited << endl;
             }
             if (this->board.moveVehicule(vB, backward, pas, false))
             {
@@ -110,7 +116,7 @@ void State::makeNeighbor()
                 {
                     new_states_vehicules.push_back(this->board.getVehicules()[i]);
                 }
-                plateau neighbor_board(new_states_vehicules, this->board.getExitRow(), this->board.getExitCol(), this->board.getVehiculRowStart(), this->board.getVehiculColStart(), this->board.getVehicleLength(), this->board.getVehiculDirection(), this->board.getMoveCount());
+                plateau neighbor_board(new_states_vehicules, this->board.getExitRow(), this->board.getExitCol(), this->board.getVehiculRowStart(), this->board.getVehiculColStart(), this->board.getVehicleLength(), this->board.getVehiculDirection(), this->board.getMoveCount(), this->board.getBoardState());
                 // cout << "pos new v avant: " << neighbor_board.getVehicules()[i].getPositionRow() << " - " << neighbor_board.getVehicules()[i].getPositionCol() << endl;
                 neighbor_board.moveVehicule(neighbor_board.getVehicules()[i], backward, pas, true);
                 // cout << "pos new v apres : " << neighbor_board.getVehicules()[i].getPositionRow() << " - " << neighbor_board.getVehicules()[i].getPositionCol() << endl;

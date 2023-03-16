@@ -5,15 +5,15 @@ plateau::plateau()
 {
     initBoard();
     moveCount = 0;
-    exitRow = 0;
-    exitCol = 0;
+    // exitRow = 0;
+    // exitCol = 0;
     vehiculRowStart = 0;
     vehiculColStart = 0;
     VehicleLength = 0;
     vehiculDirection = false;
 }
 
-plateau::plateau(vector<vehicule> vehicules, int exitRow, int exitCol, int vehiculRowStart, int vehiculColStart, int VehicleLength, bool vehiculDirection, int moveCount)
+plateau::plateau(vector<vehicule> vehicules, int exitRow, int exitCol, int vehiculRowStart, int vehiculColStart, int VehicleLength, bool vehiculDirection, int moveCount, board_state_struct states)
 {
     this->vehicules = vehicules;
     this->exitRow = exitRow;
@@ -23,17 +23,47 @@ plateau::plateau(vector<vehicule> vehicules, int exitRow, int exitCol, int vehic
     this->VehicleLength = VehicleLength;
     this->vehiculDirection = vehiculDirection;
     this->moveCount = moveCount;
+    this->states = states;
 }
 
 plateau::~plateau()
 {
 }
 
+void plateau::updateBoard()
+{
+    for (int i = 0; i < TAILLE; i++)
+    {
+        for (int j = 0; j < TAILLE; j++)
+        {
+            board[i][j] = '.';
+            states.board_state[i][j] = false;
+        }
+    }
+    for (int i = 0; i < vehicules.size(); i++)
+    {
+        vehicule v = vehicules[i];
+        char symbol = i == 0 ? 'X' : 'A' + i - 1;
+        for (int j = 0; j < v.getLength(); j++)
+        {
+            if (v.getDirection())
+            {
+                board[v.getPositionRow()][v.getPositionCol() + j] = symbol;
+                states.board_state[v.getPositionRow()][v.getPositionCol() + j] = true;
+            }
+            else
+            {
+                board[v.getPositionRow() + j][v.getPositionCol()] = symbol;
+                states.board_state[v.getPositionRow() + j][v.getPositionCol()] = true;
+            }
+        }
+    }
+}
+
 void plateau::initBoard()
 {
     ifstream infile("data/puzzle.txt");
     infile >> exitRow >> exitCol;
-    infile >> vehiculRowStart >> vehiculColStart >> VehicleLength >> vehiculDirection;
     int row, col, len, dir;
     while (infile >> row >> col >> len >> dir)
     {
@@ -48,43 +78,13 @@ void plateau::initBoard()
         assert(v.getPositionCol() >= 0 && v.getPositionCol() < TAILLE && "La position d'un vehicule doit être comprise entre 0 et 5");
         assert(v.getPositionRow() >= 0 && v.getPositionRow() < TAILLE && "La position d'un vehicule doit être comprise entre 0 et 5");
     }
+    updateBoard();
 }
 
-void plateau::displayBoard()
+void plateau::displayBoard() const
 {
-    board_state_struct b;
     cout << endl;
 
-    for (int i = 0; i < TAILLE; i++)
-    {
-        for (int j = 0; j < TAILLE; j++)
-        {
-            board[i][j] = '.';
-            states.board_state[i][j] = false;
-        }
-    }
-
-    board[exitRow][exitCol] = 'E';
-    states.board_state[exitRow][exitCol] = false;
-    for (int i = 0; i < vehicules.size(); i++)
-    {
-        vehicule v = vehicules[i];
-        char symbol = i == 0 ? 'X' : 'A' + i - 1;
-        for (int j = 0; j < v.getLength(); j++)
-        {
-            if (v.getDirection())
-            {
-
-                board[v.getPositionRow()][v.getPositionCol() + j] = symbol;
-                states.board_state[v.getPositionRow()][v.getPositionCol() + j] = true;
-            }
-            else
-            {
-                board[v.getPositionRow() + j][v.getPositionCol()] = symbol;
-                states.board_state[v.getPositionRow() + j][v.getPositionCol()] = true;
-            }
-        }
-    }
     for (int i = 0; i < TAILLE; i++)
     {
         cout << i << "      ";
@@ -99,8 +99,6 @@ void plateau::displayBoard()
         {
             if (board[i][j] == 'X')
                 cout << "\033[1;31m";
-            else if (board[i][j] == 'E')
-                cout << "\033[1;32m";
             else
                 for (int k = 0; k < vehicules.size(); k++)
                 {
@@ -128,39 +126,36 @@ void plateau::displayBoard()
 
 bool plateau::moveVehiculeF(vehicule &v, int pas, bool effective)
 {
-    bool ok_to_go;
-    for (int j = 0; j < vehicules.size(); j++)
+    bool ok_to_go = false;
+    if (v.getDirection())
     {
-        if (v.getDirection())
+        bool out_of_bound = v.getPositionCol() + (v.getLength() - 1) + pas >= 6;
+        if (!out_of_bound)
         {
-            // vérifie qu'il n'y ai pas collision entre la position de tête du vehicule[j] et la position future voulue par v.
-            // la position de tête correspond à la position sans prise en compte de la longueur.
-            // = 1 si libre, 0 sinon.
-            bool front_not_free = ((v.getPositionCol() + (v.getLength() - 1) + pas >= vehicules[j].getPositionCol()) &&
-                                   (v.getPositionRow() >= vehicules[j].getPositionRow()));
-            // même chose mais en prenant en compte la longueur.
-            bool back_not_free = ((v.getPositionCol() + (v.getLength() - 1) + pas <= vehicules[j].getPositionCol() + (vehicules[j].getLength() - 1)) &&
-                                  (v.getPositionRow() <= vehicules[j].getPositionRow() + (vehicules[j].getLength() - 1)));
-            bool cell_taken = front_not_free && back_not_free;
-
-            // test si on est dans le cadre ou non.
-            bool in_board = (v.getPositionCol() + (v.getLength() - 1) + pas < TAILLE);
-            ok_to_go = !cell_taken && in_board;
+            for (int i = 1; i <= pas; i++)
+            {
+                if (!states.board_state[v.getPositionRow()][v.getPositionCol() + (v.getLength() - 1) + i])
+                    ok_to_go = true;
+                else
+                    ok_to_go = false;
+                if (!ok_to_go)
+                    break;
+            }
         }
-        else
+    }
+    else
+    {
+        bool out_of_bound = v.getPositionRow() + (v.getLength() - 1) + pas >= 6;
+        for (int i = 1; i <= pas; i++)
         {
-            // même chose que le 1er cas, seul la direction traité change.
-            bool front_not_free = ((v.getPositionRow() + (v.getLength() - 1) + pas >= vehicules[j].getPositionRow()) &&
-                                   (v.getPositionCol() >= vehicules[j].getPositionCol()));
-            bool back_not_free = ((v.getPositionRow() + (v.getLength() - 1) + pas <= vehicules[j].getPositionRow() + (vehicules[j].getLength() - 1)) &&
-                                  (v.getPositionCol() <= vehicules[j].getPositionCol() + (vehicules[j].getLength() - 1)));
-            bool cell_taken = front_not_free && back_not_free;
-
-            bool in_board = (v.getPositionRow() + (v.getLength() - 1) + pas < TAILLE);
-            ok_to_go = !cell_taken && in_board;
+            if (!out_of_bound)
+                if (!states.board_state[v.getPositionRow() + (v.getLength() - 1) + i][v.getPositionCol()])
+                    ok_to_go = true;
+                else
+                    ok_to_go = false;
+            if (!ok_to_go)
+                break;
         }
-        if (!ok_to_go)
-            break;
     }
     if (ok_to_go && effective)
     {
@@ -175,47 +170,33 @@ bool plateau::moveVehiculeB(vehicule &v, int pas, bool effective)
 {
     // la même chose que dans moveVehiculeF mais on recule au lieu d'avancer.
     bool ok_to_go = false;
-    // int l = v.getPositionRow();
-    // int c = v.getPositionCol();
-    // if (v.getDirection()) // horizontal
-    // {
-    //     c -= 1;
-    //     while (c >= c - pas)
-    //     {
-    //         c -= 1;
-    //     }
-    // }
-    // else // vertical
-    // {
-    //     l -= pas;
-    // }
-
-    for (int j = 0; j < vehicules.size(); j++)
+    if (v.getDirection())
     {
-        if (v.getDirection())
+        bool out_of_bound = v.getPositionCol() - pas < 0;
+        for (int i = 1; i <= pas; i++)
         {
-            bool front_not_free = ((v.getPositionCol() - pas >= vehicules[j].getPositionCol()) &&
-                                   (v.getPositionRow() >= vehicules[j].getPositionRow()));
-            bool back_not_free = ((v.getPositionCol() - pas <= vehicules[j].getPositionCol() + (vehicules[j].getLength() - 1)) &&
-                                  (v.getPositionRow() <= vehicules[j].getPositionRow() + (vehicules[j].getLength() - 1)));
-            bool cell_taken = front_not_free && back_not_free;
-
-            bool in_board = (v.getPositionCol() - pas > 0);
-            ok_to_go = !cell_taken && in_board;
+            if (!out_of_bound)
+                if (!states.board_state[v.getPositionRow()][v.getPositionCol() - i])
+                    ok_to_go = true;
+                else
+                    ok_to_go = false;
+            if (!ok_to_go)
+                break;
         }
-        else
+    }
+    else
+    {
+        bool out_of_bound = v.getPositionRow() - pas < 0;
+        for (int i = 1; i <= pas; i++)
         {
-            bool front_not_free = ((v.getPositionRow() - pas >= vehicules[j].getPositionRow()) &&
-                                   (v.getPositionCol() >= vehicules[j].getPositionCol()));
-            bool back_not_free = ((v.getPositionRow() - pas <= vehicules[j].getPositionRow() + (vehicules[j].getLength() - 1)) &&
-                                  (v.getPositionCol() <= vehicules[j].getPositionCol() + (vehicules[j].getLength() - 1)));
-            bool cell_taken = front_not_free && back_not_free;
-
-            bool in_board = (v.getPositionRow() - pas > 0);
-            ok_to_go = !cell_taken && in_board;
+            if (!out_of_bound)
+                if (!states.board_state[v.getPositionRow() - i][v.getPositionCol()])
+                    ok_to_go = true;
+                else
+                    ok_to_go = false;
+            if (!ok_to_go)
+                break;
         }
-        if (!ok_to_go)
-            break;
     }
     if (ok_to_go && effective)
     {
@@ -237,22 +218,40 @@ bool plateau::moveVehicule(vehicule &v, bool dir, int pas, bool effective)
     {
         move_ok = moveVehiculeB(v, pas, effective);
     }
-    cout << "Move count: " << moveCount << endl;
+    updateBoard();
+    // cout << "Move count: " << moveCount << endl;
     return move_ok;
+}
+
+bool plateau::win_board() const
+{
+    return (vehicules[0].getPositionCol() + (vehicules[0].getLength() - 1) == exitCol) && (vehicules[0].getPositionRow() == exitRow);
 }
 
 void plateau::play()
 {
-    moveVehicule(vehicules[1], false, 1, true);
-    displayBoard();
-    moveVehicule(vehicules[1], true, 2, true);
-    displayBoard();
-    moveVehicule(vehicules[6], true, 1, true);
-    displayBoard();
-    moveVehicule(vehicules[6], true, 1, true);
-    displayBoard();
-    moveVehicule(vehicules[6], false, 1, true);
-    displayBoard();
+    moveVehicule(vehicules[9], false, 1, true);
+    // displayBoard();
+    // moveVehicule(vehicules[10], false, 1, true);
+    // displayBoard();
+    // moveVehicule(vehicules[12], true, 2, true);
+    // displayBoard();
+    // moveVehicule(vehicules[2], true, 3, true);
+    // displayBoard();
+    // moveVehicule(vehicules[0], true, 1, true);
+    // displayBoard();
+    // moveVehicule(vehicules[1], true, 1, true);
+    // displayBoard();
+    // moveVehicule(vehicules[3], false, 3, true);
+    // displayBoard();
+    // moveVehicule(vehicules[4], false, 1, true);
+    // displayBoard();
+    // moveVehicule(vehicules[0], true, 2, true);
+    // displayBoard();
+    // moveVehicule(vehicules[10], false, 1, true);
+    // displayBoard();
+    // moveVehicule(vehicules[2], false, 2, true);
+    // displayBoard();
 }
 //------------------------------------------------------------------------------
 
@@ -326,17 +325,50 @@ void plateau::setVehicules(vector<vehicule> vehicules)
     this->vehicules = vehicules;
 }
 
-board_state_struct plateau::getBoardState()
+const board_state_struct &plateau::getBoardState() const
 {
     return states;
 }
 
-char plateau::getBoard(int row, int col)
+const char &plateau::getBoard(int row, int col) const
 {
     return board[row][col];
 }
 
-int plateau::getMoveCount()
+const int &plateau::getMoveCount() const
 {
     return moveCount;
+}
+
+bool plateau::operator==(const plateau &p2) const
+{
+    // Comparaison des vecteurs de véhicules
+    if (this->vehicules.size() != p2.vehicules.size())
+    {
+        return false;
+    }
+    for (size_t i = 0; i < this->vehicules.size(); i++)
+    {
+        if (this->vehicules[i] != p2.vehicules[i])
+        {
+            return false;
+        }
+    }
+    // Comparaison des tableaux de caractères
+    for (int i = 0; i < TAILLE; i++)
+    {
+        for (int j = 0; j < TAILLE; j++)
+        {
+            if (this->getBoard(i, j) != p2.getBoard(i, j))
+            {
+                return false;
+            }
+        }
+    }
+    // Comparaison des autres attributs
+    if (this->getMoveCount() != p2.getMoveCount())
+    {
+        return false;
+    }
+    return true;
 }
