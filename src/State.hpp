@@ -16,6 +16,7 @@ private:
 
 public:
     State();
+    State(bool isVisited, vector<State> neighbors, State *parent, int cost, plateau board);
     ~State();
 
     bool operator==(const State &s) const;
@@ -24,7 +25,7 @@ public:
     bool getIsVisited();
     void setIsVisited(bool isVisited);
 
-    State *getParent();
+    const State *getParent() const;
     void setParent(State *parent);
 
     int getCost();
@@ -36,7 +37,7 @@ public:
 
     /* Méthodes */
     void addNeighbor(State neighbor);
-    void makeNeighbor();
+    void makeNeighbor(const vector<State> &already_known);
 };
 
 #endif

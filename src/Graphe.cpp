@@ -21,28 +21,24 @@ void Graphe::breadthFirstSearch(State s)
     q.push(s);
     State win_state;
     s.setIsVisited(true);
+    bool win = false;
     // std::set<State, StateCompare> visited_states;
     // visited_states.insert(s);
     std::vector<State> visited_states;
     visited_states.push_back(s);
     while (!q.empty())
     {
-        cout << "taille q : " << q.size() << endl;
+        // cout << "taille q : " << q.size() << endl;
         State current = q.front();
-        current.getBoard().displayBoard();
-        cout << "gagné ??" << endl;
-        if (current.getBoard().win_board())
+        // current.getBoard().displayBoard();
+        // cout << "gagné ??" << endl;
+
+        // cout << "alo" << endl;
+        current.makeNeighbor(visited_states);
+        // cout << "size : " << current.getNeighbors().size() << endl;
+        for (auto &neighbour : current.getNeighbors())
         {
-            cout << "gagné !!" << endl;
-            win_state = current;
-            break;
-        }
-        cout << "alo" << endl;
-        current.makeNeighbor();
-        cout << "size : " << current.getNeighbors().size() << endl;
-        for (auto neighbour : current.getNeighbors())
-        {
-            cout << "AAAA" << endl;
+            // cout << "AAAA" << endl;
             // cout << (visited_states.find(neighbour) == visited_states.end()) << endl;
             bool ok = true;
             for (auto e : visited_states)
@@ -55,17 +51,47 @@ void Graphe::breadthFirstSearch(State s)
             }
             if (!neighbour.getIsVisited() && ok)
             {
-                cout << "alo2" << endl;
+                // cout << "alo2" << endl;
                 neighbour.setIsVisited(true);
+                neighbour.setParent(&current);
+                if (neighbour.getBoard().win_board())
+                {
+                    // cout << "gagné !!" << endl;
+                    win_state = neighbour;
+                    win = true;
+                    break;
+                }
                 q.push(neighbour);
                 visited_states.push_back(neighbour);
+                if (*neighbour.getParent() == current)
+                {
+                    // cout << ";;;;;;;;)))))))))" << endl;
+                    // cout << "1 : " << endl;
+                    // neighbour.getParent()->getBoard().displayBoard();
+                    // cout << "2 : " << endl;
+                    // current.getBoard().displayBoard();
+                    // cout << "3 : " << endl;
+                    // neighbour.getBoard().displayBoard();
+                }
+                else
+                {
+                    // cout << ";(((((((" << endl;
+                }
             }
         }
+        if (win)
+            break;
         q.pop();
-        cout << "taille q fin : " << q.size() << endl;
+        // cout << "taille q fin : " << q.size() << endl;
     }
     visited_states.clear();
     cout << "win state : " << endl;
     win_state.getBoard().displayBoard();
     cout << "move count : " << win_state.getBoard().getMoveCount() << endl;
+    std::cout << "parent :" << std::endl;
+    if (win_state.getParent() != nullptr)
+    {
+        win_state.getParent()->getBoard().displayBoard();
+        cout << win_state.getParent()->getBoard().getMoveCount() << endl;
+    }
 }
