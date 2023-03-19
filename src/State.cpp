@@ -36,7 +36,7 @@ void State::setIsVisited(bool isVisited)
     this->isVisited = isVisited;
 }
 
-const State *State::getParent() const
+State *State::getParent() const
 {
     return parent;
 }

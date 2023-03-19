@@ -1,5 +1,6 @@
 #include "plateau.hpp"
 #include "Graphe.hpp"
+#include <time.h>
 
 int main()
 {
@@ -21,6 +22,9 @@ int main()
     cout << (s == s2) << endl;
     // s.makeNeighbor();
     Graphe g;
+    clock_t start = clock();
     g.breadthFirstSearch(s);
+    clock_t end = clock();
+    cout << "temps de process : " << (end - start) / CLOCKS_PER_SEC << " secondes." << endl;
     return 0;
 }

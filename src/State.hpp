@@ -25,7 +25,7 @@ public:
     bool getIsVisited();
     void setIsVisited(bool isVisited);
 
-    const State *getParent() const;
+    State *getParent() const;
     void setParent(State *parent);
 
     int getCost();

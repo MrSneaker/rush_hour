@@ -18,6 +18,7 @@ struct StateCompare
 
 void Graphe::breadthFirstSearch(State s)
 {
+    cout << "processing.." << endl;
     q.push(s);
     State win_state;
     s.setIsVisited(true);
@@ -89,9 +90,14 @@ void Graphe::breadthFirstSearch(State s)
     win_state.getBoard().displayBoard();
     cout << "move count : " << win_state.getBoard().getMoveCount() << endl;
     std::cout << "parent :" << std::endl;
-    if (win_state.getParent() != nullptr)
+    State *parent = win_state.getParent();
+    if (parent != nullptr)
     {
-        win_state.getParent()->getBoard().displayBoard();
-        cout << win_state.getParent()->getBoard().getMoveCount() << endl;
+        parent->getBoard().displayBoard();
+        cout << parent->getBoard().getMoveCount() << endl;
+        parent = parent->getParent();
+        parent->getBoard().displayBoard();
+        cout << parent->getBoard().getMoveCount() << endl;
+        parent = parent->getParent();
     }
 }
