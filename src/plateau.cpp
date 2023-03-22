@@ -13,17 +13,17 @@ plateau::plateau()
     vehiculDirection = false;
 }
 
-plateau::plateau(vector<vehicule> vehicules, int exitRow, int exitCol, int vehiculRowStart, int vehiculColStart, int VehicleLength, bool vehiculDirection, int moveCount, board_state_struct states)
+plateau::plateau(const plateau &p)
 {
-    this->vehicules = vehicules;
-    this->exitRow = exitRow;
-    this->exitCol = exitCol;
-    this->vehiculRowStart = vehiculRowStart;
-    this->vehiculColStart = vehiculColStart;
-    this->VehicleLength = VehicleLength;
-    this->vehiculDirection = vehiculDirection;
-    this->moveCount = moveCount;
-    this->states = states;
+    this->vehicules = p.vehicules;
+    this->exitRow = p.exitRow;
+    this->exitCol = p.exitCol;
+    this->vehiculRowStart = p.vehiculRowStart;
+    this->vehiculColStart = p.vehiculColStart;
+    this->VehicleLength = p.VehicleLength;
+    this->vehiculDirection = p.vehiculDirection;
+    this->moveCount = p.moveCount;
+    this->states = p.states;
 }
 
 plateau::~plateau()

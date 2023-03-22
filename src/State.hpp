@@ -16,7 +16,7 @@ private:
 
 public:
     State();
-    State(bool isVisited, vector<State> neighbors, State *parent, int cost, plateau board);
+    State(const State &s);
     ~State();
 
     bool operator==(const State &s) const;

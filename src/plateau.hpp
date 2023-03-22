@@ -32,7 +32,7 @@ private:
 
 public:
     plateau();
-    plateau(vector<vehicule> vehicules, int exitRow, int exitCol, int vehiculRowStart, int vehiculColStart, int VehicleLength, bool vehiculDirection, int moveCount, board_state_struct states);
+    plateau(const plateau &p);
     ~plateau();
 
     void initBoard();
