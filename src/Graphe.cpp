@@ -34,6 +34,15 @@ void Graphe::breadthFirstSearch(State s)
         for (auto &neighbour : current.getNeighbors())
         {
             bool ok = true;
+            for (const auto &e : visited_states)
+            {
+                if (e == neighbour)
+                {
+                    ok = false;
+                    break;
+                }
+            }
+
             if (!neighbour.getIsVisited() && ok)
             {
                 neighbour.setIsVisited(true);
