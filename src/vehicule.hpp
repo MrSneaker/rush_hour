@@ -16,6 +16,8 @@ private:
     bool direction; // true = horizontal, false = vertical
 
 public:
+    int r, g, b;
+
     vehicule(int length, int positionCol, int positionRow, bool direction);
     ~vehicule();
 

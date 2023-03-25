@@ -6,6 +6,7 @@ vehicule::vehicule(int longueur, int positionCol, int positionRow, bool orientat
     this->positionCol = positionCol;
     this->positionRow = positionRow;
     this->direction = orientation;
+    r, g, b = 0;
 }
 
 vehicule::~vehicule()

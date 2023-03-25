@@ -1,5 +1,6 @@
 #include "plateau.hpp"
 #include "Graphe.hpp"
+#include "Affichage.hpp"
 #include <time.h>
 
 int main()
@@ -11,7 +12,8 @@ int main()
     // p.displayBoard();
     // p2.displayBoard();
     // p2.play();
-    State s, s2, s3;
+    State s,
+        s2, s3;
     s.setBoard(p);
     // s.getBoard().win_board();
     s2.setBoard(p2);
@@ -32,10 +34,16 @@ int main()
     //     parent->getBoard().displayBoard();
     //     parent = parent->getParent();
     // }
+    Affichage affichage(p);
+
     Graphe g;
     clock_t start = clock();
     g.breadthFirstSearch(s);
     clock_t end = clock();
     cout << "temps de process : " << (end - start) / CLOCKS_PER_SEC << " secondes." << endl;
+
+    affichage.init();
+    affichage.display();
+
     return 0;
 }

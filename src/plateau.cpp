@@ -67,7 +67,21 @@ void plateau::initBoard()
     int row, col, len, dir;
     while (infile >> row >> col >> len >> dir)
     {
-        vehicules.push_back(vehicule(len, col, row, dir));
+        vehicule v(len, col, row, dir);
+        // le premier vehicule doit etre rouge
+        if (vehicules.size() == 0)
+        {
+            v.r = 255;
+            v.g = 0;
+            v.b = 0;
+        }
+        else
+        {
+            v.r = rand() % 150;
+            v.g = rand() % 255;
+            v.b = rand() % 255;
+        }
+        vehicules.push_back(v);
     }
     infile.close();
 

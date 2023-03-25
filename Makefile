@@ -1,8 +1,10 @@
 all : bin/rush_hour_test 
 
+SDL2=`sdl2-config --cflags --libs` -lSDL2 -lSDL2_image -lSDL2_ttf -lSDL2_mixer
 
-bin/rush_hour_test : obj/rush_hour_test.o obj/plateau.o obj/vehicule.o obj/State.o obj/Graphe.o
-	g++ -o bin/rush_hour_test obj/rush_hour_test.o obj/plateau.o obj/vehicule.o obj/State.o obj/Graphe.o -ggdb
+
+bin/rush_hour_test : obj/rush_hour_test.o obj/plateau.o obj/vehicule.o obj/State.o obj/Graphe.o obj/Affichage.o
+	g++ -o bin/rush_hour_test obj/rush_hour_test.o obj/plateau.o obj/vehicule.o obj/State.o obj/Graphe.o obj/Affichage.o -ggdb $(SDL2)
 	
 obj/rush_hour_test.o : src/rush_hour_test.cpp 
 	g++ -c -o obj/rush_hour_test.o src/rush_hour_test.cpp -ggdb
@@ -12,6 +14,9 @@ obj/State.o : src/State.cpp src/State.hpp src/plateau.hpp
 
 obj/Graphe.o : src/Graphe.cpp src/Graphe.hpp src/State.hpp
 	g++ -c -o obj/Graphe.o src/Graphe.cpp -ggdb
+
+obj/Affichage.o : src/Affichage.cpp src/Affichage.hpp src/plateau.hpp
+	g++ -c -o obj/Affichage.o src/Affichage.cpp -ggdb  $(SDL2)
 
 obj/plateau.o : src/plateau.cpp src/plateau.hpp src/vehicule.hpp
 	g++ -c -o obj/plateau.o src/plateau.cpp -ggdb
