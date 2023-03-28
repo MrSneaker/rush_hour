@@ -56,7 +56,7 @@ void State::setCost(int cost)
     this->cost = cost;
 }
 
-const plateau &State::getBoard() const
+plateau &State::getBoard()
 {
     return board;
 }

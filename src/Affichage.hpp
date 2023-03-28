@@ -13,7 +13,7 @@
 #include <SDL2/SDL_ttf.h>
 
 #define WIDTH 800
-#define HEIGHT 800
+#define HEIGHT 900
 
 using namespace std;
 
@@ -26,18 +26,24 @@ private:
     SDL_Surface *surface;
     SDL_Event event;
     TTF_Font *font;
-    plateau p;
+    Graphe g;
+    bool isPressed;
+    int BoardNumber;
+    int YClicked, XClicked;
+    int Ymotion, Xmotion;
 
 public:
-    Affichage(plateau p);
+    Affichage(Graphe g);
     ~Affichage();
 
     void AfficherTexte(TTF_Font *font, string Msg, string MsgWithValeur, float Valeur, int x, int y, unsigned char r, unsigned char g, unsigned char b, int a);
 
     void init();
-    void display();
-    void displayBoard();
-    void displayMenu();
+    void loadDisplay();
+    int display();
+    bool displayBoard(State s);
+    bool displayMenuBar(int BoardNumber);
+    int displayMenu();
 };
 
 #endif

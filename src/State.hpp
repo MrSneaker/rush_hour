@@ -30,7 +30,7 @@ public:
 
     int getCost();
     void setCost(int cost);
-    const plateau &getBoard() const;
+    plateau &getBoard();
     void setBoard(const plateau &board);
 
     vector<State> getNeighbors();

@@ -1,4 +1,5 @@
 #include "Graphe.hpp"
+#include <algorithm>
 
 Graphe::Graphe(/* args */)
 {
@@ -65,13 +66,23 @@ void Graphe::breadthFirstSearch(State s)
     win_state.getBoard().displayBoard();
     cout << "move count : " << win_state.getBoard().getMoveCount() << endl;
     std::cout << "parent :" << std::endl;
+    path.push_back(win_state);
     State *parent = win_state.getParent();
     while (parent != nullptr)
     {
-        parent->getBoard().displayBoard();
-        cout << parent->getBoard().getMoveCount() << endl;
+        // parent->getBoard().displayBoard();
+        // ajoute le parent dans le vecteur path
+        path.push_back(*parent);
+        // cout << parent->getBoard().getMoveCount() << endl;
         parent = parent->getParent();
     }
+
+    // on inverse g pour avoir le chemin dans le bon sens
+    std::reverse(path.begin(), path.end());
+
+    for (auto &e : path)
+        e.getBoard().displayBoard();
+
     for (const auto &e : parents)
         delete e;
 }

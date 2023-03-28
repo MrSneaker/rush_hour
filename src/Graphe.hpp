@@ -14,6 +14,7 @@ private:
     queue<State> q;
 
 public:
+    vector<State> path;
     Graphe(/* args */);
     ~Graphe();
     void breadthFirstSearch(State G);

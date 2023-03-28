@@ -12,12 +12,12 @@ int main()
     // p.displayBoard();
     // p2.displayBoard();
     // p2.play();
-    State s,
-        s2, s3;
-    s.setBoard(p);
-    // s.getBoard().win_board();
-    s2.setBoard(p2);
-    s3.setBoard(p3);
+    // State s,
+    //     s2, s3;
+    // s.setBoard(p);
+    // // s.getBoard().win_board();
+    // s2.setBoard(p2);
+    // s3.setBoard(p3);
     // cout << "test" << endl;
     // cout << "s1 : " << endl;
     // // s.getBoard().displayBoard();
@@ -34,16 +34,15 @@ int main()
     //     parent->getBoard().displayBoard();
     //     parent = parent->getParent();
     // }
-    Affichage affichage(p);
 
     Graphe g;
-    clock_t start = clock();
-    g.breadthFirstSearch(s);
-    clock_t end = clock();
-    cout << "temps de process : " << (end - start) / CLOCKS_PER_SEC << " secondes." << endl;
+    // clock_t start = clock();
+    // g.breadthFirstSearch(s);
+    // clock_t end = clock();
+    // cout << "temps de process : " << (end - start) / CLOCKS_PER_SEC << " secondes." << endl;
+    Affichage affichage(g);
 
-    affichage.init();
-    affichage.display();
+    affichage.loadDisplay();
 
     return 0;
 }
