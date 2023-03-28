@@ -13,7 +13,7 @@ int main()
     // p2.displayBoard();
     // p2.play();
     State s;
-    //     s2, s3;
+    // //     s2, s3;
     s.setBoard(p);
     // s.getBoard().win_board();
     // s2.setBoard(p2);
@@ -40,7 +40,7 @@ int main()
     gtest.breadthFirstSearch(s);
     clock_t end = clock();
     cout << "temps de process : " << (end - start) / (CLOCKS_PER_SEC / 1000) << " milisecondes." << endl;
-    Affichage affichage(g);
+    Affichage affichage;
 
     affichage.loadDisplay();
 
