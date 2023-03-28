@@ -1,13 +1,12 @@
 #include "Affichage.hpp"
 
-Affichage::Affichage(Graphe g)
+Affichage::Affichage()
 {
     window = NULL;
     renderer = NULL;
     texture = NULL;
     surface = NULL;
     font = NULL;
-    this->g = g;
 }
 
 Affichage::~Affichage()
@@ -143,10 +142,10 @@ int Affichage::displayMenu()
 
         // Affichage du numéro du puzzle
         SDL_SetRenderDrawColor(renderer, 10, 10, 10, 255);
-        AfficherTexte(font, "Puzzle number : ", "", 0, WIDTH / 2 - 78, slider.y + slider.h + 12, 0, 0, 0, 255);
-        AfficherTexte(font, "", "", puzzleNumber, WIDTH / 2 + 102, slider.y + slider.h + 12, 0, 0, 0, 255);
+        AfficherTexte(font, "Puzzle number : ", "", 0, WIDTH / 2 - 78, slider.y + slider.h + 27, 0, 0, 0, 255);
+        AfficherTexte(font, "", "", puzzleNumber, WIDTH / 2 + 102, slider.y + slider.h + 27, 0, 0, 0, 255);
         // Affichage de la difficulté du puzzle
-        AfficherTexte(font, "", "Difficulty : ", difficulty, WIDTH / 2 - 78, slider.y + slider.h + 12 + 27, 0, 0, 0, 255);
+        AfficherTexte(font, "", "Difficulty : ", difficulty, WIDTH / 2 - 78, slider.y + slider.h + 27 + 27, 0, 0, 0, 255);
 
         SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 
@@ -301,6 +300,7 @@ int Affichage::display()
 {
     bool display = true;
     int i = 0;
+    Graphe g;
     plateau p;
     State s;
     s.setBoard(p);
@@ -369,5 +369,5 @@ int Affichage::display()
         SDL_Delay(10);
     }
 
-    return -1;
+    return 0;
 }
