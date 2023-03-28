@@ -9,6 +9,43 @@ Graphe::~Graphe()
 {
 }
 
+void Graphe::makeNeighbor(State &s)
+{
+    bool backward = false;
+    bool forward = true;
+    plateau current_board = s.getBoard();
+    int size = current_board.getVehicules().size();
+    for (int i = 0; i < size; i++)
+
+        for (int pas = 1; pas < 4; pas++)
+        {
+            vehicule vF = current_board.getVehicules()[i];
+            vehicule vB = current_board.getVehicules()[i];
+            if (current_board.moveVehicule(vF, forward, pas, false))
+            {
+                // cout << "alo" << endl;
+                plateau neighbor_board(current_board);
+                neighbor_board.moveVehicule(neighbor_board.getVehicules()[i], forward, pas, true);
+                State neighbor_state;
+                neighbor_state.setBoard(neighbor_board);
+                bool exist = !(map.find(neighbor_state) == map.end());
+                if (!exist)
+                    s.addNeighbor(neighbor_state);
+            }
+            if (current_board.moveVehicule(vB, backward, pas, false))
+            {
+                // cout << "alo" << endl;
+                plateau neighbor_board(current_board);
+                neighbor_board.moveVehicule(neighbor_board.getVehicules()[i], backward, pas, true);
+                State neighbor_state;
+                neighbor_state.setBoard(neighbor_board);
+                bool exist = !(map.find(neighbor_state) == map.end());
+                if (!exist)
+                    s.addNeighbor(neighbor_state);
+            }
+        }
+}
+
 void Graphe::breadthFirstSearch(State s)
 {
     cout << "processing.." << endl;
@@ -23,11 +60,10 @@ void Graphe::breadthFirstSearch(State s)
     {
         State current = q.front();
         parents.push_back(new State(current));
-        current.makeNeighbor();
+        makeNeighbor(current);
         for (auto &neighbour : current.getNeighbors())
         {
-            bool ok = (map.find(neighbour) == map.end());
-            if (!neighbour.getIsVisited() && ok)
+            if (!neighbour.getIsVisited())
             {
                 neighbour.setIsVisited(true);
                 neighbour.setParent(parents.back());
@@ -60,6 +96,5 @@ void Graphe::breadthFirstSearch(State s)
     // on inverse g pour avoir le chemin dans le bon sens
     std::reverse(path.begin(), path.end());
 
-    for (const auto &e : parents)
-        delete e;
+    std::for_each(parents.begin(), parents.end(), std::default_delete<State>());
 }
