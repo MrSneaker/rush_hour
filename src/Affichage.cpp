@@ -249,7 +249,7 @@ bool Affichage::displayBoard(State s)
     // - récupérer les coordonnées de chaque voiture
     // - afficher les voiture avec la bonne couleur
     int i = 0;
-    for (auto voiture : s.getBoard().getVehicules())
+    for (const auto &voiture : s.getBoard_aff().getVehicules())
     {
         // prend en compte l'inclinaison de la voiture
         SDL_Rect rect;
@@ -273,7 +273,7 @@ bool Affichage::displayBoard(State s)
         i++;
     }
 
-    return displayMenuBar(s.getBoard().getMoveCount());
+    return displayMenuBar(s.getBoard_aff().getMoveCount());
 }
 
 // Boucle du jeu

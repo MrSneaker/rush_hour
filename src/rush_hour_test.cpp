@@ -12,10 +12,10 @@ int main()
     // p.displayBoard();
     // p2.displayBoard();
     // p2.play();
-    // State s,
+    State s;
     //     s2, s3;
-    // s.setBoard(p);
-    // // s.getBoard().win_board();
+    s.setBoard(p);
+    // s.getBoard().win_board();
     // s2.setBoard(p2);
     // s3.setBoard(p3);
     // cout << "test" << endl;

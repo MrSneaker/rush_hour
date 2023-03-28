@@ -56,7 +56,12 @@ void State::setCost(int cost)
     this->cost = cost;
 }
 
-plateau &State::getBoard()
+const plateau &State::getBoard() const
+{
+    return board;
+}
+
+plateau &State::getBoard_aff()
 {
     return board;
 }
@@ -76,7 +81,7 @@ void State::addNeighbor(State neighbor)
     neighbors.push_back(neighbor);
 }
 
-void State::makeNeighbor(const vector<State> &already_known)
+void State::makeNeighbor()
 {
     bool backward = false;
     bool forward = true;
@@ -95,14 +100,6 @@ void State::makeNeighbor(const vector<State> &already_known)
                 neighbor_board.moveVehicule(neighbor_board.getVehicules()[i], forward, pas, true);
                 State neighbor_state;
                 neighbor_state.board = neighbor_board;
-                for (const auto &n : already_known)
-                {
-                    if (n == neighbor_state)
-                    {
-                        exist = true;
-                        break;
-                    }
-                }
                 if (!exist)
                     neighbors.push_back(neighbor_state);
             }
@@ -113,14 +110,6 @@ void State::makeNeighbor(const vector<State> &already_known)
                 neighbor_board.moveVehicule(neighbor_board.getVehicules()[i], backward, pas, true);
                 State neighbor_state;
                 neighbor_state.board = neighbor_board;
-                for (const auto &n : already_known)
-                {
-                    if (n == neighbor_state)
-                    {
-                        exist = true;
-                        break;
-                    }
-                }
                 if (!exist)
                     neighbors.push_back(neighbor_state);
             }

@@ -9,47 +9,31 @@ Graphe::~Graphe()
 {
 }
 
-struct StateCompare
-{
-    bool operator()(const State &s1, const State &s2) const
-    {
-        return (s1 == s2);
-    }
-};
-
 void Graphe::breadthFirstSearch(State s)
 {
     cout << "processing.." << endl;
     q.push(s);
+    std::pair<const State, State *> p_s(s, &s);
+    map.insert(p_s);
     State win_state;
     s.setIsVisited(true);
     bool win = false;
     vector<State *> parents;
-    vector<State> visited_states;
-    visited_states.push_back(s);
     while (!q.empty())
     {
         State current = q.front();
         parents.push_back(new State(current));
-        current.makeNeighbor(visited_states);
+        current.makeNeighbor();
         for (auto &neighbour : current.getNeighbors())
         {
-            bool ok = true;
-            for (const auto &e : visited_states)
-            {
-                if (e == neighbour)
-                {
-                    ok = false;
-                    break;
-                }
-            }
-
+            bool ok = (map.find(neighbour) == map.end());
             if (!neighbour.getIsVisited() && ok)
             {
                 neighbour.setIsVisited(true);
                 neighbour.setParent(parents.back());
                 q.push(neighbour);
-                visited_states.push_back(neighbour);
+                std::pair<const State, State *> p_neighbour(neighbour, &neighbour);
+                map.insert(p_neighbour);
                 if (neighbour.getBoard().win_board())
                 {
                     win_state = neighbour;
@@ -62,10 +46,6 @@ void Graphe::breadthFirstSearch(State s)
             break;
         q.pop();
     }
-    cout << "win state : " << endl;
-    win_state.getBoard().displayBoard();
-    cout << "move count : " << win_state.getBoard().getMoveCount() << endl;
-    std::cout << "parent :" << std::endl;
     path.push_back(win_state);
     State *parent = win_state.getParent();
     while (parent != nullptr)
@@ -79,9 +59,6 @@ void Graphe::breadthFirstSearch(State s)
 
     // on inverse g pour avoir le chemin dans le bon sens
     std::reverse(path.begin(), path.end());
-
-    for (auto &e : path)
-        e.getBoard().displayBoard();
 
     for (const auto &e : parents)
         delete e;

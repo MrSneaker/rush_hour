@@ -32,7 +32,7 @@ private:
 
 public:
     plateau();
-    plateau(plateau &p);
+    plateau(const plateau &p);
     ~plateau();
 
     void initBoard();

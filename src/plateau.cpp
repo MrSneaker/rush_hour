@@ -13,7 +13,7 @@ plateau::plateau()
     vehiculDirection = false;
 }
 
-plateau::plateau(plateau &p)
+plateau::plateau(const plateau &p)
 {
     this->vehicules = p.vehicules;
     this->exitRow = p.exitRow;
