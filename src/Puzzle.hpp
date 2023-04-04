@@ -24,6 +24,7 @@ public:
     void placeVehicule(vehicule v, plateau p);
     bool isValidPlacement(vehicule v, plateau p);
     void generateRandomPuzzle();
+    bool writePuzzle(plateau p, string filename);
 };
 
 #endif
