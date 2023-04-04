@@ -48,6 +48,7 @@ public:
     ~Graphe();
     void makeNeighbor(State &s);
     void breadthFirstSearch(State G);
+    void BFS_from_win(vector<State> G, State s);
 };
 
 #endif

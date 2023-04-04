@@ -92,3 +92,7 @@ void Graphe::breadthFirstSearch(State s)
 
     std::for_each(parents.begin(), parents.end(), std::default_delete<State>());
 }
+
+void Graphe::BFS_from_win(vector<State> G, State s)
+{
+}
