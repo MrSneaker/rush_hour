@@ -76,3 +76,24 @@ void Puzzle::generateRandomPuzzle()
         placeVehicule(v, p);
     }
 }
+
+bool Puzzle::writePuzzle(plateau p, string filename)
+{
+    ofstream file;
+    file.open(filename);
+    if (file.is_open())
+    {
+        file << p.getExitRow() << " " << p.getExitCol() << endl;
+        for (int i = 0; i < p.getVehicules().size(); i++)
+        {
+            vehicule v = p.getVehicules()[i];
+            file << v.getPositionCol() << " " << v.getPositionRow() << " " << v.getLength() << " " << v.getDirection() << endl;
+        }
+        file.close();
+        return true;
+    }
+    else
+    {
+        return false;
+    }
+}
