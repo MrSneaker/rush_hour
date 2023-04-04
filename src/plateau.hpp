@@ -49,6 +49,8 @@ public:
     bool win_board() const;
 
     /* Getters et Setters */
+    const int &getSize() const;
+
     int getExitRow();
     void setExitRow(int exitRow);
 
