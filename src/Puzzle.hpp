@@ -20,8 +20,8 @@ public:
     ~Puzzle();
 
     vehicule randomVehicule();
-    void placeVehicule(vehicule v, plateau p, int row, int col);
-    void isValidPlacement(vehicule v);
+    void placeVehicule(vehicule v, plateau p);
+    bool isValidPlacement(vehicule v);
     void generateRandomPuzzle();
 };
 

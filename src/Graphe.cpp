@@ -23,7 +23,6 @@ void Graphe::makeNeighbor(State &s)
             vehicule vB = current_board.getVehicules()[i];
             if (current_board.moveVehicule(vF, forward, pas, false))
             {
-                // cout << "alo" << endl;
                 plateau neighbor_board(current_board);
                 neighbor_board.moveVehicule(neighbor_board.getVehicules()[i], forward, pas, true);
                 State neighbor_state;
@@ -34,7 +33,6 @@ void Graphe::makeNeighbor(State &s)
             }
             if (current_board.moveVehicule(vB, backward, pas, false))
             {
-                // cout << "alo" << endl;
                 plateau neighbor_board(current_board);
                 neighbor_board.moveVehicule(neighbor_board.getVehicules()[i], backward, pas, true);
                 State neighbor_state;
@@ -86,14 +84,10 @@ void Graphe::breadthFirstSearch(State s)
     State *parent = win_state.getParent();
     while (parent != nullptr)
     {
-        // parent->getBoard().displayBoard();
-        // ajoute le parent dans le vecteur path
         path.push_back(*parent);
-        // cout << parent->getBoard().getMoveCount() << endl;
         parent = parent->getParent();
     }
 
-    // on inverse g pour avoir le chemin dans le bon sens
     std::reverse(path.begin(), path.end());
 
     std::for_each(parents.begin(), parents.end(), std::default_delete<State>());
