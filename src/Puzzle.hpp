@@ -9,6 +9,7 @@
 #include <vector>
 #include <sstream>
 #include <fstream>
+#include <random>
 
 using namespace std;
 
@@ -19,9 +20,9 @@ public:
     Puzzle();
     ~Puzzle();
 
-    vehicule randomVehicule();
+    vehicule randomVehicule(int row, int col);
     void placeVehicule(vehicule v, plateau p);
-    bool isValidPlacement(vehicule v);
+    bool isValidPlacement(vehicule v, plateau p);
     void generateRandomPuzzle();
 };
 

@@ -269,6 +269,11 @@ void plateau::play()
 }
 //------------------------------------------------------------------------------
 
+const int &plateau::getSize() const
+{
+    return TAILLE;
+}
+
 int plateau::getExitRow()
 {
     return exitRow;
