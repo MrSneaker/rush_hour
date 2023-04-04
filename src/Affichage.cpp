@@ -1,4 +1,5 @@
 #include "Affichage.hpp"
+#include <dirent.h>
 
 Affichage::Affichage()
 {
@@ -7,6 +8,61 @@ Affichage::Affichage()
     texture = NULL;
     surface = NULL;
     font = NULL;
+
+    b_playX = WIDTH / 2 - 130;
+    b_playY = 60;
+    b_playW = 260;
+    b_playH = 50;
+
+    puzzleChosenX = WIDTH / 2 - 225;
+    puzzleChosenY = b_playY + b_playH + space;
+    puzzleChosenW = 450;
+    puzzleChosenH = 450;
+
+    caretRightX = WIDTH / 2 + 225 + 50;
+    caretRightY = 312;
+    caretRightW = 50;
+    caretRightH = 100;
+
+    caretLeftX = WIDTH / 2 - 225 - 100;
+    caretLeftY = 312;
+    caretLeftW = 50;
+    caretLeftH = 100;
+
+    b_createNewX = WIDTH / 2 - 210;
+    b_createNewY = puzzleChosenY + puzzleChosenH + space + 33 + space + 33 + space;
+    b_createNewW = 420;
+    b_createNewH = 50;
+
+    b_quitX = WIDTH / 2 - 130;
+    b_quitY = b_createNewY + b_createNewH + space;
+    b_quitW = 260;
+    b_quitH = 50;
+
+    getPuzzleNumberMax();
+}
+
+// fonction qui récupère le nombre de puzzle dans le dossier "Puzzles" et le stocke dans puzzleNumberMax
+void Affichage::getPuzzleNumberMax()
+{
+    DIR *dir;
+    struct dirent *ent;
+    if ((dir = opendir("data/puzzles")) != NULL)
+    {
+        while ((ent = readdir(dir)) != NULL)
+        {
+            if (ent->d_type == DT_REG)
+            {
+                puzzleNumberMax++;
+            }
+        }
+        closedir(dir);
+        cout << "puzzleNumberMax = " << puzzleNumberMax << endl;
+    }
+    else
+    {
+        perror("Erreur d'ouverture du dossier");
+    }
 }
 
 Affichage::~Affichage()
@@ -16,6 +72,10 @@ Affichage::~Affichage()
     SDL_DestroyTexture(texture);
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
+    caretRight.~Image();
+    caretLeft.~Image();
+    puzzleChosen.~Image();
+
     TTF_Quit();
 
     SDL_Quit();
@@ -48,6 +108,18 @@ void Affichage::AfficherTexte(TTF_Font *font, string Msg, string MsgWithValeur, 
 
     SDL_FreeSurface(surface);
     SDL_DestroyTexture(texture);
+}
+
+void Affichage::loadPuzzleChosen()
+{
+    // efface l'anciene texture et surface
+    puzzleChosen.~Image();
+    // convertie puzzleNumber en string
+    ostringstream puzzleNumberString;
+    puzzleNumberString << puzzleNumber;
+    string puzzleNumberString2 = puzzleNumberString.str();
+    // charge la nouvelle image
+    puzzleChosen.loadFromFile(("data/puzzles/Puzzle" + puzzleNumberString2 + ".png").c_str(), renderer);
 }
 
 void Affichage::init()
@@ -84,40 +156,101 @@ void Affichage::init()
         cout << "Erreur de chargement de la police : " << TTF_GetError() << endl;
         exit(EXIT_FAILURE);
     }
+
+    caretRight.loadFromFile("data/caret-right-solid.png", renderer);
+    caretLeft.loadFromFile("data/caret-left-solid.png", renderer);
+    loadPuzzleChosen();
+}
+
+void Affichage::updateCaretDimensions(unsigned int &x, unsigned int &y, unsigned int &w, unsigned int &h, int xMotion, int yMotion, int xOffset, string side)
+{
+    if (xMotion >= x && xMotion <= x + w && yMotion >= y && yMotion <= y + h)
+    {
+        w = 53;
+        h = 103;
+        if (side == "right")
+            x = WIDTH / 2 + 225 + xOffset - 3;
+        else
+            x = WIDTH / 2 - 225 - xOffset;
+        y = 311;
+    }
+    else
+    {
+        w = 50;
+        h = 100;
+        if (side == "right")
+            x = WIDTH / 2 + 225 + xOffset - 1;
+        else
+            x = WIDTH / 2 - 225 - xOffset + 1;
+        y = 312;
+    }
+}
+
+void Affichage::updateButtonDimensions(int &x, int &y, int &w, int &h, int xMotion, int yMotion, int xOffset, int yOffset, string which)
+{
+
+    if (xMotion >= x && xMotion <= x + w && yMotion >= y && yMotion <= y + h)
+    {
+        if (which == "play" || which == "quit")
+        {
+            x = WIDTH / 2 - 130;
+            y = which == "play" ? 60 - yOffset / 2 : b_createNewY + b_createNewH + space - yOffset / 2;
+            w = 260 + xOffset / 2;
+            h = 50 + yOffset / 2;
+        }
+        else
+        {
+            x = WIDTH / 2 - 210;
+            y = puzzleChosenY + 450 + space + 33 + space + 33 + space - yOffset / 2;
+            w = 420 + xOffset / 2;
+            h = 50 + yOffset / 2;
+        }
+    }
+    else
+    {
+        if (which == "play" || which == "quit")
+        {
+            x = WIDTH / 2 - 130;
+            y = which == "play" ? 60 : puzzleChosenY + puzzleChosenH + space + 33 + space + 33 + space + 50 + space;
+            w = 260;
+            h = 50;
+        }
+        else
+        {
+            x = WIDTH / 2 - 210;
+            y = puzzleChosenY + 450 + space + 33 + space + 33 + space;
+            w = 420;
+            h = 50;
+        }
+    }
 }
 
 int Affichage::displayMenu()
 {
-    int space = 27;
-    // Initialisation des éléments du menu
-    SDL_Rect playButton = {WIDTH / 2 - 130, 60, 260, 50};
-    SDL_Rect slider = {WIDTH / 2 - 225, playButton.y + playButton.h + space, 450, 450};
-    SDL_Rect puzzleNum;        // x : WIDTH / 2 - taille du txt ; y : slider.y + slider.h + space
-    SDL_Rect puzzledifficulty; // x : WIDTH / 2 - taille du txt ; y : puzzleNum.y + puzzleNum.h + space
-    SDL_Rect createButton = {WIDTH / 2 - 210, slider.y + slider.h + space + 33 + space + 33 + space, 420, 50};
-    SDL_Rect quitButton = {WIDTH / 2 - 130, createButton.y + createButton.h + space, 260, 50};
-    // TDOO : Ajouter les flèches pour le slider
 
-    // Initialisation des variables
-    int puzzleNumber = 1;
-    int difficulty = 1;
+    // Initialisation des éléments du menu
+    SDL_Rect playButton;
+    SDL_Rect createButton;
+    SDL_Rect quitButton;
 
     bool displayMenu = true;
 
     while (displayMenu)
     {
 
-        // Affichage du menu blanc
+        playButton = {b_playX, b_playY, b_playW, b_playH};
+        createButton = {b_createNewX, b_createNewY, b_createNewW, b_createNewH};
+        quitButton = {b_quitX, b_quitY, b_quitW, b_quitH};
 
         // Affichage des Elements du menu
         // Bouttons
         SDL_SetRenderDrawColor(renderer, 127, 67, 229, 255);
         SDL_RenderFillRect(renderer, &playButton);
-        AfficherTexte(font, "Play", "", 0, WIDTH / 2 - 24, playButton.y + 10, 255, 255, 255, 255);
+        AfficherTexte(font, "Play", "", 0, b_playX + 110, b_playY + 10, 255, 255, 255, 255);
         SDL_RenderFillRect(renderer, &createButton);
-        AfficherTexte(font, "Create new puzzle", "", 0, WIDTH / 2 - 102, createButton.y + 10, 255, 255, 255, 255);
+        AfficherTexte(font, "Create new puzzle", "", 0, b_createNewX + 110, b_createNewY + 10, 255, 255, 255, 255);
         SDL_RenderFillRect(renderer, &quitButton);
-        AfficherTexte(font, "Quit", "", 0, WIDTH / 2 - 24, quitButton.y + 10, 255, 255, 255, 255);
+        AfficherTexte(font, "Quit", "", 0, b_quitX + 110, b_quitY + 10, 255, 255, 255, 255);
 
         // ajoute une petit effet d'ombre aux bouttons, en bas à gauche
         SDL_SetRenderDrawColor(renderer, 10, 10, 10, 255);
@@ -129,25 +262,28 @@ int Affichage::displayMenu()
         SDL_RenderDrawLine(renderer, quitButton.x + quitButton.w, quitButton.y + 1, quitButton.x + quitButton.w, quitButton.y + quitButton.h);
 
         // ajout une bordure de 2px aux slider
-        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-        SDL_RenderDrawLine(renderer, slider.x - 1, slider.y - 1, slider.x + slider.w - 1, slider.y - 1);
-        SDL_RenderDrawLine(renderer, slider.x - 1, slider.y - 1, slider.x - 1, slider.y + slider.h - 1);
-        SDL_RenderDrawLine(renderer, slider.x + slider.w, slider.y, slider.x + slider.w, slider.y + slider.h);
-        SDL_RenderDrawLine(renderer, slider.x, slider.y + slider.h, slider.x + slider.w, slider.y + slider.h);
+        SDL_SetRenderDrawColor(renderer, 10, 10, 10, 255);
+        SDL_RenderDrawLine(renderer, puzzleChosenX - 1, puzzleChosenY - 1, puzzleChosenX + puzzleChosenW + 1, puzzleChosenY - 1);
+        SDL_RenderDrawLine(renderer, puzzleChosenX - 1, puzzleChosenY - 1, puzzleChosenX - 1, puzzleChosenY + puzzleChosenH + 1);
+        SDL_RenderDrawLine(renderer, puzzleChosenX + puzzleChosenW + 1, puzzleChosenY - 1, puzzleChosenX + puzzleChosenW + 1, puzzleChosenY + puzzleChosenH + 1);
+        SDL_RenderDrawLine(renderer, puzzleChosenX - 1, puzzleChosenY + puzzleChosenH + 1, puzzleChosenX + puzzleChosenW + 1, puzzleChosenY + puzzleChosenH + 1);
 
         // slider
-        SDL_SetRenderDrawColor(renderer, 200, 200, 200, 255);
-        SDL_RenderFillRect(renderer, &slider);
-        // TODO : Afficher les flèches pour le slider
+        SDL_Rect SliderRect = {puzzleChosenX, puzzleChosenY, puzzleChosenW, puzzleChosenH};
+        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_RenderFillRect(renderer, &SliderRect);
+        puzzleChosen.draw(renderer, WIDTH / 2 - 225, playButton.y + playButton.h + space, 450, 450);
+        caretLeft.draw(renderer, caretLeftX, caretLeftY, caretLeftW, caretLeftH);
+        caretRight.draw(renderer, caretRightX, caretRightY, caretRightW, caretRightH);
 
         // Affichage du numéro du puzzle
         SDL_SetRenderDrawColor(renderer, 10, 10, 10, 255);
-        AfficherTexte(font, "Puzzle number : ", "", 0, WIDTH / 2 - 78, slider.y + slider.h + 27, 0, 0, 0, 255);
-        AfficherTexte(font, "", "", puzzleNumber, WIDTH / 2 + 102, slider.y + slider.h + 27, 0, 0, 0, 255);
+        AfficherTexte(font, "Puzzle number : ", "", 0, WIDTH / 2 - 78, puzzleChosenY + puzzleChosenH + space, 0, 0, 0, 255);
+        AfficherTexte(font, "", "", puzzleNumber, WIDTH / 2 + 102, puzzleChosenY + puzzleChosenH + space, 0, 0, 0, 255);
         // Affichage de la difficulté du puzzle
-        AfficherTexte(font, "", "Difficulty : ", difficulty, WIDTH / 2 - 78, slider.y + slider.h + 27 + 27, 0, 0, 0, 255);
+        AfficherTexte(font, "", "Difficulty : ", difficulty, WIDTH / 2 - 78, puzzleChosenY + puzzleChosenH + space + space, 0, 0, 0, 255);
 
-        SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+        SDL_SetRenderDrawColor(renderer, 216, 223, 227, 255);
 
         while (SDL_PollEvent(&event))
         {
@@ -177,19 +313,52 @@ int Affichage::displayMenu()
                 break;
             }
         }
+        // hover
+        updateCaretDimensions(caretLeftX, caretLeftY, caretLeftW, caretLeftH, Xmotion, Ymotion, 102, "left");
+        updateCaretDimensions(caretRightX, caretRightY, caretRightW, caretRightH, Xmotion, Ymotion, 49, "right");
 
-        if (XClicked >= playButton.x && XClicked <= playButton.x + playButton.w && YClicked >= playButton.y && YClicked <= playButton.y + playButton.h)
+        updateButtonDimensions(b_playX, b_playY, b_playW, b_playH, Xmotion, Ymotion, 4, 4, "play");
+        updateButtonDimensions(b_createNewX, b_createNewY, b_createNewW, b_createNewH, Xmotion, Ymotion, 4, 4, "create");
+        updateButtonDimensions(b_quitX, b_quitY, b_quitW, b_quitH, Xmotion, Ymotion, 4, 4, "quit");
+
+        if (isPressed)
         {
-            return 1;
+            if (XClicked >= caretLeftX && XClicked <= caretLeftX + caretLeftW && YClicked >= caretLeftY && YClicked <= caretLeftY + caretLeftH)
+            {
+                if (puzzleNumber > 1)
+                {
+                    --puzzleNumber;
+                    loadPuzzleChosen();
+                }
+
+                cout << "puzzleNumber : " << puzzleNumber << endl;
+            }
+            else if (XClicked >= caretRightX && XClicked <= caretRightX + caretRightW && YClicked >= caretRightY && YClicked <= caretRightY + caretRightH)
+            {
+                if (puzzleNumber < puzzleNumberMax)
+                {
+                    ++puzzleNumber;
+                    loadPuzzleChosen();
+                }
+                cout << "puzzleNumber : " << puzzleNumber << endl;
+            }
+
+            if (XClicked >= playButton.x && XClicked <= playButton.x + playButton.w && YClicked >= playButton.y && YClicked <= playButton.y + playButton.h)
+            {
+                return 1;
+            }
+            else if (XClicked >= createButton.x && XClicked <= createButton.x + createButton.w && YClicked >= createButton.y && YClicked <= createButton.y + createButton.h)
+            {
+                // return 2;
+                cout << "creating a new puzzle" << endl;
+            }
+            else if (XClicked >= quitButton.x && XClicked <= quitButton.x + quitButton.w && YClicked >= quitButton.y && YClicked <= quitButton.y + quitButton.h)
+            {
+                return -1;
+            }
         }
-        else if (XClicked >= createButton.x && XClicked <= createButton.x + createButton.w && YClicked >= createButton.y && YClicked <= createButton.y + createButton.h)
-        {
-            return 2;
-        }
-        else if (XClicked >= quitButton.x && XClicked <= quitButton.x + quitButton.w && YClicked >= quitButton.y && YClicked <= quitButton.y + quitButton.h)
-        {
-            return -1;
-        }
+
+        isPressed = false;
         SDL_RenderPresent(renderer);
         SDL_RenderClear(renderer);
 

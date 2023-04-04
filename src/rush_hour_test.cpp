@@ -35,11 +35,11 @@ int main()
     //     parent = parent->getParent();
     // }
 
-    Graphe g, gtest;
-    clock_t start = clock();
-    gtest.breadthFirstSearch(s);
-    clock_t end = clock();
-    cout << "temps de process : " << (end - start) / (CLOCKS_PER_SEC / 1000) << " milisecondes." << endl;
+    // Graphe g, gtest;
+    // clock_t start = clock();
+    // gtest.breadthFirstSearch(s);
+    // clock_t end = clock();
+    // cout << "temps de process : " << (end - start) / (CLOCKS_PER_SEC / 1000) << " milisecondes." << endl;
     Affichage affichage;
 
     affichage.loadDisplay();

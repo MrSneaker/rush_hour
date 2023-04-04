@@ -3,6 +3,7 @@
 
 #include "plateau.hpp"
 #include "Graphe.hpp"
+#include "Image.hpp"
 
 #include <iostream>
 #include <string>
@@ -31,6 +32,47 @@ private:
     int BoardNumber;
     int YClicked, XClicked;
     int Ymotion, Xmotion;
+    SDL_Cursor *cursor;
+    int space = 27;
+    int puzzleNumber = 1;
+    int puzzleNumberMax = 0;
+    int difficulty = 1;
+
+    //-----------------Image-----------------
+
+    Image caretRight;
+    unsigned int caretRightX;
+    unsigned int caretRightY;
+    unsigned int caretRightW;
+    unsigned int caretRightH;
+
+    Image caretLeft;
+    unsigned int caretLeftX;
+    unsigned int caretLeftY;
+    unsigned int caretLeftW;
+    unsigned int caretLeftH;
+
+    Image puzzleChosen;
+    unsigned int puzzleChosenX;
+    unsigned int puzzleChosenY;
+    unsigned int puzzleChosenW;
+    unsigned int puzzleChosenH;
+
+    //-----------------Boutons-----------------
+    int b_playX;
+    int b_playY;
+    int b_playW;
+    int b_playH;
+
+    int b_quitX;
+    int b_quitY;
+    int b_quitW;
+    int b_quitH;
+
+    int b_createNewX;
+    int b_createNewY;
+    int b_createNewW;
+    int b_createNewH;
 
 public:
     Affichage();
@@ -44,6 +86,10 @@ public:
     bool displayBoard(State s);
     bool displayMenuBar(int BoardNumber);
     int displayMenu();
+    void loadPuzzleChosen();
+    void getPuzzleNumberMax();
+    void updateCaretDimensions(unsigned int &x, unsigned int &y, unsigned int &w, unsigned int &h, int xMotion, int yMotion, int xOffset, string side);
+    void updateButtonDimensions(int &x, int &y, int &w, int &h, int xMotion, int yMotion, int xOffset, int yOffset, string which);
 };
 
 #endif
