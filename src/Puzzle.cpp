@@ -28,7 +28,14 @@ void Puzzle::generateRandomPuzzle()
         int length = rand() % 2 + 2;
         bool direction = rand() % 2;
         vehicule v(length, position_col, position_row, direction);
-        if (isValidPlacement(v, p))
-            placeVehicule(v, p);
+        while (!isValidPlacement(v, p))
+        {
+            int position_col = rand() % 6;
+            int position_row = rand() % 6;
+            int length = rand() % 2 + 2;
+            bool direction = rand() % 2;
+            vehicule v(length, position_col, position_row, direction);
+        }
+        placeVehicule(v, p);
     }
 }
