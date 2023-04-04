@@ -18,13 +18,16 @@ class Puzzle
 private:
 public:
     Puzzle();
+    plateau p;
     ~Puzzle();
 
     vehicule randomVehicule(int row, int col);
-    void placeVehicule(vehicule v, plateau p);
-    bool isValidPlacement(vehicule v, plateau p);
+    void placeVehicule(vehicule v);
+    bool isValidPlacement(vehicule &v);
     void generateRandomPuzzle();
-    bool writePuzzle(plateau p, string filename);
+    bool writePuzzle(string filename);
+
+    void test_regression();
 };
 
 #endif

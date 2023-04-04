@@ -4,6 +4,7 @@
 #include "plateau.hpp"
 #include "Graphe.hpp"
 #include "Image.hpp"
+#include "Puzzle.hpp"
 
 #include <iostream>
 #include <string>
@@ -28,13 +29,14 @@ private:
     SDL_Event event;
     TTF_Font *font;
     Graphe g;
+    plateau currentBoard;
     bool isPressed;
     int BoardNumber;
     int YClicked, XClicked;
     int Ymotion, Xmotion;
     SDL_Cursor *cursor;
     int space = 27;
-    int puzzleNumber = 1;
+    int currentPuzzleNumber = 1;
     int puzzleNumberMax = 0;
     int difficulty = 1;
 
@@ -86,7 +88,9 @@ public:
     bool displayBoard(State s);
     bool displayMenuBar(int BoardNumber);
     int displayMenu();
+    void displayPuzzleChosen();
     void loadPuzzleChosen();
+    void createNewPuzzle();
     void getPuzzleNumberMax();
     void updateCaretDimensions(unsigned int &x, unsigned int &y, unsigned int &w, unsigned int &h, int xMotion, int yMotion, int xOffset, string side);
     void updateButtonDimensions(int &x, int &y, int &w, int &h, int xMotion, int yMotion, int xOffset, int yOffset, string which);

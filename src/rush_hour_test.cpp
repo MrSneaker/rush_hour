@@ -5,16 +5,16 @@
 
 int main()
 {
-
-    plateau p, p2, p3;
+    srand(time(NULL));
+    // plateau p, p2, p3;
     // p.play();
     // p3.play();
     // p.displayBoard();
     // p2.displayBoard();
     // p2.play();
-    State s;
-    // //     s2, s3;
-    s.setBoard(p);
+    // State s;
+    // // //     s2, s3;
+    // s.setBoard(p);
     // s.getBoard().win_board();
     // s2.setBoard(p2);
     // s3.setBoard(p3);

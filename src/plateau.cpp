@@ -1,16 +1,41 @@
 #include "plateau.hpp"
 #include <assert.h>
 
-plateau::plateau()
+plateau::plateau(string filename)
 {
-    initBoard();
     moveCount = 0;
-    // exitRow = 0;
-    // exitCol = 0;
+    exitRow = 2;
+    exitCol = 5;
     vehiculRowStart = 0;
     vehiculColStart = 0;
     VehicleLength = 0;
     vehiculDirection = false;
+    size = TAILLE;
+    initBoard(filename);
+}
+
+void plateau::reset()
+{
+    vehicules.clear();
+    moveCount = 0;
+    exitRow = 2;
+    exitCol = 5;
+    vehiculRowStart = 0;
+    vehiculColStart = 0;
+    VehicleLength = 0;
+    vehiculDirection = false;
+}
+
+plateau::plateau()
+{
+    moveCount = 0;
+    exitRow = 2;
+    exitCol = 5;
+    vehiculRowStart = 0;
+    vehiculColStart = 0;
+    VehicleLength = 0;
+    vehiculDirection = false;
+    size = TAILLE;
 }
 
 plateau::plateau(const plateau &p)
@@ -60,9 +85,10 @@ void plateau::updateBoard()
     }
 }
 
-void plateau::initBoard()
+void plateau::initBoard(string filename)
 {
-    ifstream infile("data/puzzle.txt");
+    reset();
+    ifstream infile(filename);
     infile >> exitRow >> exitCol;
     int row, col, len, dir;
     while (infile >> row >> col >> len >> dir)
@@ -271,7 +297,7 @@ void plateau::play()
 
 const int &plateau::getSize() const
 {
-    return TAILLE;
+    return size;
 }
 
 int plateau::getExitRow()
