@@ -345,7 +345,10 @@ int Affichage::displayMenu()
         SDL_RenderDrawLine(renderer, puzzleChosenX - 1, puzzleChosenY - 1, puzzleChosenX - 1, puzzleChosenY + puzzleChosenH + 1);
         SDL_RenderDrawLine(renderer, puzzleChosenX + puzzleChosenW + 1, puzzleChosenY - 1, puzzleChosenX + puzzleChosenW + 1, puzzleChosenY + puzzleChosenH + 1);
         SDL_RenderDrawLine(renderer, puzzleChosenX - 1, puzzleChosenY + puzzleChosenH + 1, puzzleChosenX + puzzleChosenW + 1, puzzleChosenY + puzzleChosenH + 1);
-
+        SDL_RenderDrawLine(renderer, puzzleChosenX - 2, puzzleChosenY - 2, puzzleChosenX + puzzleChosenW + 2, puzzleChosenY - 2);
+        SDL_RenderDrawLine(renderer, puzzleChosenX - 2, puzzleChosenY - 2, puzzleChosenX - 2, puzzleChosenY + puzzleChosenH + 2);
+        SDL_RenderDrawLine(renderer, puzzleChosenX + puzzleChosenW + 2, puzzleChosenY - 2, puzzleChosenX + puzzleChosenW + 2, puzzleChosenY + puzzleChosenH + 2);
+        SDL_RenderDrawLine(renderer, puzzleChosenX - 2, puzzleChosenY + puzzleChosenH + 2, puzzleChosenX + puzzleChosenW + 2, puzzleChosenY + puzzleChosenH + 2);
         // slider
         // SDL_Rect SliderRect = {puzzleChosenX, puzzleChosenY, puzzleChosenW, puzzleChosenH};
         // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);

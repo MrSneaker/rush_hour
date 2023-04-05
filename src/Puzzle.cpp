@@ -1,4 +1,5 @@
 #include "Puzzle.hpp"
+#include "Graphe.hpp"
 
 using namespace std;
 
@@ -59,6 +60,11 @@ bool Puzzle::isValidPlacement(vehicule &v)
                 return false;
             }
         }
+        // je ne veux pas de véhicule qui soit sur la ligne de sortie
+        if (v.getPositionRow() == p.getExitRow())
+        {
+            return false;
+        }
     }
     else
     {
@@ -80,6 +86,7 @@ bool Puzzle::isValidPlacement(vehicule &v)
             if (p.getBoardState().board_state[row][v.getPositionCol()])
             {
                 blockedCount++;
+                cout << "blockedCount : " << blockedCount << endl;
             }
             else
             {
@@ -97,27 +104,40 @@ bool Puzzle::isValidPlacement(vehicule &v)
 
 void Puzzle::generateRandomPuzzle()
 {
+    int iteration = 0;
     p.reset();
 
-    int nb_vehicules = rand() % 12 + 1;
+    int nb_vehicules = rand() % 6 + 6; // entre 6 et 10
+    cout << "Nombre de véhicules : " << nb_vehicules << endl;
     int length_startVec = rand() % 2 + 2;
 
-    vehicule v(length_startVec, p.getExitCol() - length_startVec + 1, p.getExitRow(), true);
-    p.getVehicules().push_back(v);
+    vehicule redCar(length_startVec, p.getExitCol() - length_startVec + 1, p.getExitRow(), true);
+    p.getVehicules().push_back(redCar);
+    length_startVec == 2 ? p.moveVehiculeB(p.getVehicules()[0], 4, 1) : p.moveVehiculeB(p.getVehicules()[0], 3, 1);
+
     p.updateBoard();
     for (int i = 0; i < nb_vehicules; ++i)
     {
         int position_col = rand() % 6;
         int position_row = rand() % 6;
         vehicule v = randomVehicule(position_row, position_col);
-        while (!isValidPlacement(v))
+        while (!isValidPlacement(v) && iteration < 100)
         {
+            v.getLength() == 2 ? v.setLength(3) : v.setLength(2);
             int position_col = rand() % 6;
             int position_row = rand() % 6;
             v = randomVehicule(position_row, position_col);
+            iteration++;
         }
-        placeVehicule(v);
-        p.updateBoard();
+        if (iteration >= 100)
+        {
+            cout << "Impossible de placer le véhicule " << i << endl;
+        }
+        else
+        {
+            placeVehicule(v);
+            p.updateBoard();
+        }
     }
 }
 

@@ -26,7 +26,7 @@ public:
     bool isValidPlacement(vehicule &v);
     void generateRandomPuzzle();
     bool writePuzzle(string filename);
-
+    bool generatePuzzleWithBacktracking(int row, int col);
     void test_regression();
 };
 

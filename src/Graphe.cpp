@@ -51,6 +51,7 @@ void Graphe::makeNeighbor(State &s, bool start_finder)
 int Graphe::breadthFirstSearch(State s)
 {
     cout << "processing.." << endl;
+    int iteration = 0;
     q.push(s);
     std::pair<const State, State *> p_s(s, &s);
     map.insert(p_s);
@@ -58,7 +59,7 @@ int Graphe::breadthFirstSearch(State s)
     s.setIsVisited(true);
     bool win = false;
     vector<State *> parents;
-    while (!q.empty())
+    while (!q.empty() && iteration < 50000)
     {
         State current = q.front();
         parents.push_back(new State(current));
@@ -87,6 +88,7 @@ int Graphe::breadthFirstSearch(State s)
         if (win)
             break;
         q.pop();
+        ++iteration;
     }
     path.push_back(win_state);
     State *parent = win_state.getParent();
