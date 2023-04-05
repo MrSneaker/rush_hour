@@ -345,7 +345,10 @@ int Affichage::displayMenu()
         SDL_RenderDrawLine(renderer, puzzleChosenX - 1, puzzleChosenY - 1, puzzleChosenX - 1, puzzleChosenY + puzzleChosenH + 1);
         SDL_RenderDrawLine(renderer, puzzleChosenX + puzzleChosenW + 1, puzzleChosenY - 1, puzzleChosenX + puzzleChosenW + 1, puzzleChosenY + puzzleChosenH + 1);
         SDL_RenderDrawLine(renderer, puzzleChosenX - 1, puzzleChosenY + puzzleChosenH + 1, puzzleChosenX + puzzleChosenW + 1, puzzleChosenY + puzzleChosenH + 1);
-
+        SDL_RenderDrawLine(renderer, puzzleChosenX - 2, puzzleChosenY - 2, puzzleChosenX + puzzleChosenW + 2, puzzleChosenY - 2);
+        SDL_RenderDrawLine(renderer, puzzleChosenX - 2, puzzleChosenY - 2, puzzleChosenX - 2, puzzleChosenY + puzzleChosenH + 2);
+        SDL_RenderDrawLine(renderer, puzzleChosenX + puzzleChosenW + 2, puzzleChosenY - 2, puzzleChosenX + puzzleChosenW + 2, puzzleChosenY + puzzleChosenH + 2);
+        SDL_RenderDrawLine(renderer, puzzleChosenX - 2, puzzleChosenY + puzzleChosenH + 2, puzzleChosenX + puzzleChosenW + 2, puzzleChosenY + puzzleChosenH + 2);
         // slider
         // SDL_Rect SliderRect = {puzzleChosenX, puzzleChosenY, puzzleChosenW, puzzleChosenH};
         // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
@@ -579,7 +582,7 @@ int Affichage::display()
     Graphe g;
     State s;
     s.setBoard(currentBoard);
-    // g.breadthFirstSearch(s);
+    g.breadthFirstSearch(s);
 
     while (display)
     {
@@ -601,7 +604,7 @@ int Affichage::display()
                     if (i > 0)
                     {
                         i--;
-                        // displayBoard(g.path[i]);
+                        displayBoard(g.path[i]);
                     }
 
                     break;
@@ -610,7 +613,7 @@ int Affichage::display()
                     if (i < g.path.size() - 1)
                     {
                         i++;
-                        // displayBoard(g.path[i]);
+                        displayBoard(g.path[i]);
                     }
                     break;
                 }
@@ -633,15 +636,15 @@ int Affichage::display()
             }
         }
 
-        // if (!displayBoard(g.path[i]))
-        // {
-        //     display = false;
-        // }
-
-        if (!displayBoard(s))
+        if (!displayBoard(g.path[i]))
         {
             display = false;
         }
+
+        // if (!displayBoard(s))
+        // {
+        //     display = false;
+        // }
 
         SDL_RenderPresent(renderer);
         SDL_RenderClear(renderer);
