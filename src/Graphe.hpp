@@ -46,9 +46,10 @@ public:
     vector<State> path;
     Graphe(/* args */);
     ~Graphe();
-    void makeNeighbor(State &s);
-    void breadthFirstSearch(State G);
-    void BFS_from_win(vector<State> G, State s);
+    void makeNeighbor(State &s, bool start_find);
+    int breadthFirstSearch(State G);
+    State BFS_from_win(vector<State> G, int s);
+    State best_start_finder(State s);
 };
 
 #endif

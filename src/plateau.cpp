@@ -110,7 +110,6 @@ void plateau::initBoard(string filename)
         vehicules.push_back(v);
     }
     infile.close();
-
     assert(vehicules.size() > 0 && vehicules.size() <= 16 && "Le nombre de vehicules doit être compris entre 1 et 16");
     for (auto v : vehicules)
     {
@@ -266,6 +265,11 @@ bool plateau::moveVehicule(vehicule &v, bool dir, int pas, bool effective)
 bool plateau::win_board() const
 {
     return (vehicules[0].getPositionCol() + (vehicules[0].getLength() - 1) == exitCol) && (vehicules[0].getPositionRow() == exitRow);
+}
+
+bool plateau::is_start_board() const
+{
+    return (vehicules[0].getPositionCol() == 0) && (vehicules[0].getPositionRow() == exitRow);
 }
 
 void plateau::play()

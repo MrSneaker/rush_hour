@@ -50,6 +50,7 @@ public:
     bool moveVehiculeB(vehicule &v, int pas, bool effective);
     void play();
     bool win_board() const;
+    bool is_start_board() const;
 
     /* Getters et Setters */
     const int &getSize() const;
