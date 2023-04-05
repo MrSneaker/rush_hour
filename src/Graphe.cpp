@@ -80,6 +80,7 @@ void Graphe::breadthFirstSearch(State s)
             break;
         q.pop();
     }
+    cout << "--flag 5--" << endl;
     path.push_back(win_state);
     State *parent = win_state.getParent();
     while (parent != nullptr)

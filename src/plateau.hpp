@@ -21,6 +21,7 @@ class plateau
 {
 
 private:
+    int size;
     vector<vehicule> vehicules;
     char board[TAILLE][TAILLE];
     board_state_struct states;
@@ -32,10 +33,12 @@ private:
 
 public:
     plateau();
+    plateau(string filename);
     plateau(const plateau &p);
     ~plateau();
 
-    void initBoard();
+    void reset();
+    void initBoard(string filename);
     void updateBoard();
     void displayBoard() const;
     /*! \brief bouge le vehicule dans la direction indiquée en paramètre si c'est possible.*/
