@@ -9,15 +9,13 @@ Graphe::~Graphe()
 {
 }
 
-void Graphe::makeNeighbor(State &s, bool start_finder)
+void Graphe::makeNeighbor(State &s)
 {
     int start = 0;
     bool backward = false;
     bool forward = true;
     plateau current_board = s.getBoard();
     int size = current_board.getVehicules().size();
-    if (start_finder)
-        start = 1;
 
     for (int i = start; i < size; i++)
 
@@ -48,24 +46,25 @@ void Graphe::makeNeighbor(State &s, bool start_finder)
         }
 }
 
-int Graphe::breadthFirstSearch(State s)
+int Graphe::breadthFirstSearch(State s, int max_iterations)
 {
-    cout << "state avant process : " << endl;
-    s.getBoard().displayBoard();
+    int nb_coup = 0;
     cout << "processing.." << endl;
+    State test;
     int iteration = 0;
     q.push(s);
     std::pair<const State, State *> p_s(s, &s);
     map.insert(p_s);
     State win_state;
+    State last_state;
     s.setIsVisited(true);
     bool win = false;
     vector<State *> parents;
-    while (!q.empty() && iteration < 50000)
+    while (!q.empty() && iteration < max_iterations)
     {
         State current = q.front();
         parents.push_back(new State(current));
-        makeNeighbor(current, false);
+        makeNeighbor(current);
         for (auto &neighbour : current.getNeighbors())
         {
             if (!neighbour.getIsVisited())
@@ -75,28 +74,28 @@ int Graphe::breadthFirstSearch(State s)
                 q.push(neighbour);
                 std::pair<const State, State *> p_neighbour(neighbour, &neighbour);
                 map.insert(p_neighbour);
-                // cout << "neighbour : " << endl;
-                // neighbour.getBoard().displayBoard();
                 if (neighbour.getBoard().win_board())
                 {
                     win_state = neighbour;
-                    // cout << "test win_state : " << endl;
-                    // win_state.getBoard().displayBoard();
                     win = true;
-                    // break;
+                    break;
                 }
             }
         }
+        q.pop();
+        last_state = current;
         if (win)
             break;
-        q.pop();
         ++iteration;
     }
-    if (iteration >= 50000)
+    if (!win)
     {
-        cout << "trop d'itération => puzzle irrésolvable" << endl;
-        return -1;
+        cout << "puzzle irrésolvable" << endl;
+        nb_coup = -1;
     }
+    else
+        nb_coup = win_state.getBoard().getMoveCount();
+    cout << "itération : " << iteration << endl;
     path.push_back(win_state);
     State *parent = win_state.getParent();
     while (parent != nullptr)
@@ -111,6 +110,5 @@ int Graphe::breadthFirstSearch(State s)
     while (!q.empty())
         q.pop();
     map.clear();
-
-    return win_state.getBoard().getMoveCount();
+    return nb_coup;
 }

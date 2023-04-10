@@ -5,6 +5,7 @@ using namespace std;
 
 Puzzle::Puzzle()
 {
+    complexite = 0;
 }
 
 Puzzle::~Puzzle()
@@ -27,6 +28,8 @@ vehicule Puzzle::randomVehicule(int row, int col)
 
 bool Puzzle::isValidPlacement(vehicule &v)
 {
+    Graphe g;
+    State s;
     int blockedCount = 0;
 
     if (v.getDirection())
@@ -60,7 +63,7 @@ bool Puzzle::isValidPlacement(vehicule &v)
                 return false;
             }
         }
-        // je ne veux pas de véhicule qui soit sur la ligne de sortie
+        // je ne veux pas de véhicule qui soit sur la ligne de sortie à l'horizontal
         if (v.getPositionRow() == p.getExitRow())
         {
             return false;
@@ -99,15 +102,23 @@ bool Puzzle::isValidPlacement(vehicule &v)
             }
         }
     }
+    plateau p_test(p);
+    p_test.getVehicules().push_back(v);
+    p_test.updateBoard();
+    s.setBoard(p_test);
+    cout << endl;
+    int res = g.breadthFirstSearch(s, 100000);
+    if (res == -1 || res <= complexite)
+        return false;
+    complexite = res;
     return true;
 }
 
 void Puzzle::generateRandomPuzzle()
 {
-    int iteration = 0;
     p.reset();
 
-    int nb_vehicules = rand() % 6 + 6; // entre 6 et 11
+    int nb_vehicules = rand() % 6 + 10; // entre 10 et 15
     cout << "Nombre de véhicules : " << nb_vehicules << endl;
     int length_startVec = /*rand() % 2 +*/ 2;
 
@@ -118,11 +129,13 @@ void Puzzle::generateRandomPuzzle()
     p.updateBoard();
     for (int i = 0; i < nb_vehicules; ++i)
     {
+        int iteration = 0;
         int position_col = rand() % 6;
         int position_row = rand() % 6;
         vehicule v = randomVehicule(position_row, position_col);
         while (!isValidPlacement(v) && iteration < 100)
         {
+            cout << "itération dans randomGene : " << iteration << endl;
             v.getLength() == 2 ? v.setLength(3) : v.setLength(2);
             int position_col = rand() % 6;
             int position_row = rand() % 6;
@@ -132,6 +145,7 @@ void Puzzle::generateRandomPuzzle()
         if (iteration >= 100)
         {
             cout << "Impossible de placer le véhicule " << i << endl;
+            break;
         }
         else
         {

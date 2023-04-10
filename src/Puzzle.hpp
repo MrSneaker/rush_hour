@@ -16,6 +16,8 @@ using namespace std;
 class Puzzle
 {
 private:
+    int complexite;
+
 public:
     Puzzle();
     plateau p;

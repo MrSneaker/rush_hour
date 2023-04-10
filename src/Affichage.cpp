@@ -294,7 +294,10 @@ void Affichage::createNewPuzzle()
 {
     cout << "creating a new puzzle..." << endl;
     Puzzle puzzle;
-    puzzle.generateRandomPuzzle();                                                            // Génère un nouveau puzzle aléatoire
+    clock_t start = clock();
+    puzzle.generateRandomPuzzle();
+    clock_t stop = clock(); // Génère un nouveau puzzle aléatoire
+    cout << "temps de process randomPuzzle : " << (double)(stop - start) / (CLOCKS_PER_SEC) << " secondes." << endl;
     puzzle.writePuzzle("./data/puzzlesTXT/puzzle" + to_string(puzzleNumberMax + 1) + ".txt"); // Écrit le puzzle dans un nouveau fichier
     cout << "New puzzle successfully created at : "
          << "./data/puzzlesTXT/puzzle" + to_string(puzzleNumberMax + 1) + ".txt" << endl;
@@ -582,7 +585,7 @@ int Affichage::display()
     Graphe g;
     State s;
     s.setBoard(currentBoard);
-    g.breadthFirstSearch(s);
+    g.breadthFirstSearch(s, 100000);
 
     while (display)
     {
