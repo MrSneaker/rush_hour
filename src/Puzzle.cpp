@@ -107,13 +107,13 @@ void Puzzle::generateRandomPuzzle()
     int iteration = 0;
     p.reset();
 
-    int nb_vehicules = rand() % 6 + 6; // entre 6 et 10
+    int nb_vehicules = rand() % 6 + 6; // entre 6 et 11
     cout << "Nombre de véhicules : " << nb_vehicules << endl;
-    int length_startVec = rand() % 2 + 2;
+    int length_startVec = /*rand() % 2 +*/ 2;
 
-    vehicule redCar(length_startVec, p.getExitCol() - length_startVec + 1, p.getExitRow(), true);
+    vehicule redCar(length_startVec, 0, p.getExitRow(), true);
     p.getVehicules().push_back(redCar);
-    length_startVec == 2 ? p.moveVehiculeB(p.getVehicules()[0], 4, 1) : p.moveVehiculeB(p.getVehicules()[0], 3, 1);
+    // length_startVec == 2 ? p.moveVehiculeB(p.getVehicules()[0], 4, 1) : p.moveVehiculeB(p.getVehicules()[0], 3, 1);
 
     p.updateBoard();
     for (int i = 0; i < nb_vehicules; ++i)

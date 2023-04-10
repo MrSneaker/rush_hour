@@ -50,6 +50,8 @@ void Graphe::makeNeighbor(State &s, bool start_finder)
 
 int Graphe::breadthFirstSearch(State s)
 {
+    cout << "state avant process : " << endl;
+    s.getBoard().displayBoard();
     cout << "processing.." << endl;
     int iteration = 0;
     q.push(s);
@@ -90,6 +92,11 @@ int Graphe::breadthFirstSearch(State s)
         q.pop();
         ++iteration;
     }
+    if (iteration >= 50000)
+    {
+        cout << "trop d'itération => puzzle irrésolvable" << endl;
+        return -1;
+    }
     path.push_back(win_state);
     State *parent = win_state.getParent();
     while (parent != nullptr)
@@ -104,101 +111,6 @@ int Graphe::breadthFirstSearch(State s)
     while (!q.empty())
         q.pop();
     map.clear();
+
     return win_state.getBoard().getMoveCount();
-}
-
-State Graphe::BFS_from_win(vector<State> G, int s)
-{
-    cout << "process from win.." << endl;
-    path.clear();
-
-    for (auto &state : G)
-        state.setIsVisited(false);
-
-    q.push(G[s]);
-    G[s].setIsVisited(true);
-
-    std::pair<const State, State *> p_s(G[s], &G[s]);
-    map.insert(p_s);
-    State win_state;
-    bool win = false;
-
-    while (!q.empty())
-    {
-        State current = q.front();
-        makeNeighbor(current, false);
-        for (auto &neighbour : current.getNeighbors())
-        {
-            if (!neighbour.getIsVisited())
-            {
-                neighbour.setIsVisited(true);
-                q.push(neighbour);
-                std::pair<const State, State *> p_neighbour(neighbour, &neighbour);
-                map.insert(p_neighbour);
-                // neighbour.getBoard().displayBoard();
-                cout << neighbour.getBoard().getMoveCount() << endl;
-                if (neighbour.getBoard().is_start_board())
-                {
-                    win_state = neighbour;
-                    win = true;
-                    break;
-                }
-                else if (neighbour.getBoard().getMoveCount() > 20)
-                {
-                    cout << "lol trop long" << endl;
-                    win = true;
-                    win_state = neighbour;
-                    break;
-                }
-            }
-        }
-        if (win)
-            break;
-        q.pop();
-    }
-    win_state.getBoard().displayBoard();
-    while (!q.empty())
-        q.pop();
-    map.clear();
-    return win_state;
-}
-
-State Graphe::best_start_finder(State s)
-{
-    cout << "processing.. start" << endl;
-    q.push(s);
-    std::pair<const State, State *> p_s(s, &s);
-    map.insert(p_s);
-    State win_state;
-    s.setIsVisited(true);
-    bool win = false;
-    while (!q.empty())
-    {
-        State current = q.front();
-        makeNeighbor(current, true);
-        for (auto &neighbour : current.getNeighbors())
-        {
-            if (!neighbour.getIsVisited())
-            {
-                neighbour.setIsVisited(true);
-                q.push(neighbour);
-                std::pair<const State, State *> p_neighbour(neighbour, &neighbour);
-                map.insert(p_neighbour);
-                neighbour.getBoard().displayBoard();
-                if (breadthFirstSearch(neighbour) > 2)
-                {
-                    win_state = neighbour;
-                    win = true;
-                    break;
-                }
-            }
-        }
-        if (win)
-            break;
-        q.pop();
-    }
-    while (!q.empty())
-        q.pop();
-    map.clear();
-    return win_state;
 }
