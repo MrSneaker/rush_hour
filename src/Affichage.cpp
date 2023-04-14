@@ -1,5 +1,7 @@
 #include "Affichage.hpp"
 #include <dirent.h>
+#include <thread>
+#include <future>
 
 Affichage::Affichage()
 {
@@ -114,18 +116,6 @@ void Affichage::AfficherTexte(TTF_Font *font, string Msg, string MsgWithValeur, 
     SDL_DestroyTexture(texture);
 }
 
-void Affichage::loadPuzzleChosen()
-{
-    // efface l'anciene texture et surface
-    puzzleChosen.~Image();
-    // convertie currentPuzzleNumber en string
-    ostringstream puzzleNumberString;
-    puzzleNumberString << currentPuzzleNumber;
-    string puzzleNumberString2 = puzzleNumberString.str();
-    // charge la nouvelle image
-    puzzleChosen.loadFromFile(("data/puzzlesPNG/Puzzle" + puzzleNumberString2 + ".png").c_str(), renderer);
-}
-
 void Affichage::init()
 {
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
@@ -163,7 +153,6 @@ void Affichage::init()
 
     caretRight.loadFromFile("data/caret-right-solid.png", renderer);
     caretLeft.loadFromFile("data/caret-left-solid.png", renderer);
-    loadPuzzleChosen();
 }
 
 void Affichage::updateCaretDimensions(unsigned int &x, unsigned int &y, unsigned int &w, unsigned int &h, int xMotion, int yMotion, int xOffset, string side)
@@ -290,12 +279,13 @@ void Affichage::displayPuzzleChosen()
     }
 }
 
-void Affichage::createNewPuzzle()
+void Affichage::createNewPuzzle(std::promise<void> createPuzzlePromise)
 {
     cout << "creating a new puzzle..." << endl;
     Puzzle puzzle;
     clock_t start = clock();
-    puzzle.generateRandomPuzzle();
+    // genere un nouveau puzzle aleatoire avec la promesse createPuzzlePromise
+    puzzle.generateRandomPuzzle(std::move(createPuzzlePromise));
     clock_t stop = clock(); // Génère un nouveau puzzle aléatoire
     cout << "temps de process randomPuzzle : " << (double)(stop - start) / (CLOCKS_PER_SEC) << " secondes." << endl;
     puzzle.writePuzzle("./data/puzzlesTXT/puzzle" + to_string(puzzleNumberMax + 1) + ".txt"); // Écrit le puzzle dans un nouveau fichier
@@ -365,8 +355,6 @@ int Affichage::displayMenu()
         SDL_SetRenderDrawColor(renderer, 10, 10, 10, 255);
         AfficherTexte(font, "Puzzle number : ", "", 0, WIDTH / 2 - 78, puzzleChosenY + puzzleChosenH + space, 0, 0, 0, 255);
         AfficherTexte(font, "", "", currentPuzzleNumber, WIDTH / 2 + 102, puzzleChosenY + puzzleChosenH + space, 0, 0, 0, 255);
-        // Affichage de la difficulté du puzzle
-        AfficherTexte(font, "", "Difficulty : ", difficulty, WIDTH / 2 - 78, puzzleChosenY + puzzleChosenH + space + space, 0, 0, 0, 255);
 
         SDL_SetRenderDrawColor(renderer, 216, 223, 227, 255);
 
@@ -449,7 +437,14 @@ int Affichage::displayMenu()
             else if (XClicked >= createButton.x && XClicked <= createButton.x + createButton.w &&
                      YClicked >= createButton.y && YClicked <= createButton.y + createButton.h)
             {
-                createNewPuzzle(); // Lance la création d'un nouveau puzzle
+                std::promise<void> createPuzzlePromise;
+                std::future<void> createPuzzleFuture = createPuzzlePromise.get_future();
+
+                std::thread createPuzzleThread([this, createPuzzlePromise = std::move(createPuzzlePromise)]() mutable
+                                               { createNewPuzzle(std::move(createPuzzlePromise)); });
+                createPuzzleThread.detach();
+
+                // createNewPuzzle(); // Lance la création d'un nouveau puzzle
             }
             // Vérifie si le bouton de sortie
             else if (XClicked >= quitButton.x && XClicked <= quitButton.x + quitButton.w &&
@@ -638,7 +633,6 @@ int Affichage::display()
                 break;
             }
         }
-
         if (!displayBoard(g.path[i]))
         {
             display = false;

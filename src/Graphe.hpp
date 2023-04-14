@@ -8,6 +8,7 @@
 #include <utility>
 #include <algorithm>
 #include <memory>
+#include <future>
 #include "State.hpp"
 
 using namespace std;

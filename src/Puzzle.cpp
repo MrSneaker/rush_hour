@@ -1,5 +1,6 @@
 #include "Puzzle.hpp"
 #include "Graphe.hpp"
+#include <future>
 
 using namespace std;
 
@@ -114,7 +115,7 @@ bool Puzzle::isValidPlacement(vehicule &v)
     return true;
 }
 
-void Puzzle::generateRandomPuzzle()
+void Puzzle::generateRandomPuzzle(std::promise<void> createPuzzlePromise)
 {
     p.reset();
 
@@ -153,6 +154,7 @@ void Puzzle::generateRandomPuzzle()
             p.updateBoard();
         }
     }
+    createPuzzlePromise.set_value();
 }
 
 bool Puzzle::writePuzzle(string filename)
@@ -174,6 +176,11 @@ bool Puzzle::writePuzzle(string filename)
     {
         return false;
     }
+}
+
+int Puzzle::getComplexite()
+{
+    return complexite;
 }
 
 void Puzzle::test_regression()
