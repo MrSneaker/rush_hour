@@ -1,5 +1,6 @@
 #include "Puzzle.hpp"
 #include "Graphe.hpp"
+#include <future>
 
 using namespace std;
 
@@ -89,7 +90,7 @@ bool Puzzle::isValidPlacement(vehicule &v)
             if (p.getBoardState().board_state[row][v.getPositionCol()])
             {
                 blockedCount++;
-                cout << "blockedCount : " << blockedCount << endl;
+                // cout << "blockedCount : " << blockedCount << endl;
             }
             else
             {
@@ -115,15 +116,10 @@ bool Puzzle::isValidPlacement(vehicule &v)
     return true;
 }
 
-void Puzzle::multi_task_validPlacement(int &res, Graphe g, State s, int depth)
-{
-    res = g.breadthFirstSearch(s, depth);
-}
-
-void Puzzle::generateRandomPuzzle()
+void Puzzle::generateRandomPuzzle(std::promise<void> createPuzzlePromise)
 {
     p.reset();
-
+    srand(time(NULL));
     int nb_vehicules = rand() % 6 + 10; // entre 10 et 15
     cout << "Nombre de véhicules : " << nb_vehicules << endl;
     int length_startVec = 2;
@@ -135,14 +131,14 @@ void Puzzle::generateRandomPuzzle()
     p.updateBoard();
     for (int i = 0; i < nb_vehicules; ++i)
     {
-        cout << "num t  : " << omp_get_num_threads() << endl;
+        srand(time(NULL));
         int iteration = 0;
         int position_col = rand() % 6;
         int position_row = rand() % 6;
         vehicule v = randomVehicule(position_row, position_col);
         while (!isValidPlacement(v) && iteration < 100)
         {
-            cout << "itération dans randomGene : " << iteration << endl;
+            // cout << "itération dans randomGene : " << iteration << endl;
             v.getLength() == 2 ? v.setLength(3) : v.setLength(2);
             int position_col = rand() % 6;
             int position_row = rand() % 6;
@@ -151,7 +147,7 @@ void Puzzle::generateRandomPuzzle()
         }
         if (iteration >= 100)
         {
-            cout << "Impossible de placer le véhicule " << i << endl;
+            // cout << "Impossible de placer le véhicule " << i << endl;
             break;
         }
         else
@@ -160,6 +156,7 @@ void Puzzle::generateRandomPuzzle()
             p.updateBoard();
         }
     }
+    createPuzzlePromise.set_value();
 }
 
 bool Puzzle::writePuzzle(string filename)
@@ -181,6 +178,11 @@ bool Puzzle::writePuzzle(string filename)
     {
         return false;
     }
+}
+
+int Puzzle::getComplexite()
+{
+    return complexite;
 }
 
 void Puzzle::test_regression()

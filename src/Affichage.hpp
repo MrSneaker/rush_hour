@@ -38,7 +38,6 @@ private:
     int space = 27;
     int currentPuzzleNumber = 1;
     int puzzleNumberMax = 0;
-    int difficulty = 1;
 
     //-----------------Image-----------------
 
@@ -89,8 +88,7 @@ public:
     bool displayMenuBar(int BoardNumber);
     int displayMenu();
     void displayPuzzleChosen();
-    void loadPuzzleChosen();
-    void createNewPuzzle();
+    void createNewPuzzle(std::promise<void> createPuzzlePromise);
     void getPuzzleNumberMax();
     void updateCaretDimensions(unsigned int &x, unsigned int &y, unsigned int &w, unsigned int &h, int xMotion, int yMotion, int xOffset, string side);
     void updateButtonDimensions(int &x, int &y, int &w, int &h, int xMotion, int yMotion, int xOffset, int yOffset, string which);

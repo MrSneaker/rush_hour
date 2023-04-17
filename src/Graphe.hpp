@@ -8,9 +8,7 @@
 #include <utility>
 #include <algorithm>
 #include <memory>
-#include <omp.h>
-#include <thread>
-#include <condition_variable>
+#include <future>
 #include "State.hpp"
 
 using namespace std;

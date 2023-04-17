@@ -10,8 +10,7 @@
 #include <sstream>
 #include <fstream>
 #include <random>
-#include <thread>
-#include <omp.h>
+#include <future>
 
 using namespace std;
 
@@ -28,11 +27,12 @@ public:
     vehicule randomVehicule(int row, int col);
     void placeVehicule(vehicule v);
     bool isValidPlacement(vehicule &v);
-    void generateRandomPuzzle();
+    void generateRandomPuzzle(std::promise<void> createPuzzlePromise);
     bool writePuzzle(string filename);
     void multi_task_validPlacement(int &res, Graphe g, State s, int depth);
     bool generatePuzzleWithBacktracking(int row, int col);
     void test_regression();
+    int getComplexite();
 };
 
 #endif
