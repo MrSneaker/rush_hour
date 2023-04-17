@@ -102,16 +102,22 @@ bool Puzzle::isValidPlacement(vehicule &v)
             }
         }
     }
+
     plateau p_test(p);
     p_test.getVehicules().push_back(v);
     p_test.updateBoard();
     s.setBoard(p_test);
-    cout << endl;
+
     int res = g.breadthFirstSearch(s, 100000);
     if (res == -1 || res <= complexite)
         return false;
     complexite = res;
     return true;
+}
+
+void Puzzle::multi_task_validPlacement(int &res, Graphe g, State s, int depth)
+{
+    res = g.breadthFirstSearch(s, depth);
 }
 
 void Puzzle::generateRandomPuzzle()
@@ -120,7 +126,7 @@ void Puzzle::generateRandomPuzzle()
 
     int nb_vehicules = rand() % 6 + 10; // entre 10 et 15
     cout << "Nombre de véhicules : " << nb_vehicules << endl;
-    int length_startVec = /*rand() % 2 +*/ 2;
+    int length_startVec = 2;
 
     vehicule redCar(length_startVec, 0, p.getExitRow(), true);
     p.getVehicules().push_back(redCar);
@@ -129,6 +135,7 @@ void Puzzle::generateRandomPuzzle()
     p.updateBoard();
     for (int i = 0; i < nb_vehicules; ++i)
     {
+        cout << "num t  : " << omp_get_num_threads() << endl;
         int iteration = 0;
         int position_col = rand() % 6;
         int position_row = rand() % 6;

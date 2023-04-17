@@ -8,6 +8,9 @@
 #include <utility>
 #include <algorithm>
 #include <memory>
+#include <omp.h>
+#include <thread>
+#include <condition_variable>
 #include "State.hpp"
 
 using namespace std;
@@ -47,6 +50,9 @@ public:
     Graphe(/* args */);
     ~Graphe();
     void makeNeighbor(State &s);
+    void multi_thread_process(bool &is_win_state, State *parent);
+    State get_elem();
+    void put(State elem);
     int breadthFirstSearch(State G, int max_iterations);
 };
 

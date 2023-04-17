@@ -16,9 +16,7 @@ void Graphe::makeNeighbor(State &s)
     bool forward = true;
     plateau current_board = s.getBoard();
     int size = current_board.getVehicules().size();
-
     for (int i = start; i < size; i++)
-
         for (int pas = 1; pas < 4; pas++)
         {
             vehicule vF = current_board.getVehicules()[i];
@@ -31,7 +29,10 @@ void Graphe::makeNeighbor(State &s)
                 neighbor_state.setBoard(neighbor_board);
                 bool exist = !(map.find(neighbor_state) == map.end());
                 if (!exist)
+                {
                     s.addNeighbor(neighbor_state);
+                    // put(neighbor_state);
+                }
             }
             if (current_board.moveVehicule(vB, backward, pas, false))
             {
@@ -41,7 +42,9 @@ void Graphe::makeNeighbor(State &s)
                 neighbor_state.setBoard(neighbor_board);
                 bool exist = !(map.find(neighbor_state) == map.end());
                 if (!exist)
+                {
                     s.addNeighbor(neighbor_state);
+                }
             }
         }
 }
@@ -63,6 +66,10 @@ int Graphe::breadthFirstSearch(State s, int max_iterations)
     while (!q.empty() && iteration < max_iterations)
     {
         State current = q.front();
+        if (map.find(current) == map.end())
+        {
+            break;
+        }
         parents.push_back(new State(current));
         makeNeighbor(current);
         for (auto &neighbour : current.getNeighbors())
@@ -78,15 +85,14 @@ int Graphe::breadthFirstSearch(State s, int max_iterations)
                 {
                     win_state = neighbour;
                     win = true;
-                    break;
                 }
             }
         }
         q.pop();
         last_state = current;
+        ++iteration;
         if (win)
             break;
-        ++iteration;
     }
     if (!win)
     {
