@@ -70,18 +70,24 @@ $ git clone https://forge.univ-lyon1.fr/lifap6/rush-hour-etu.git
 $ sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev
 ```
 
-### Pour lancer le programme en test
+### Pour lancer le programme
 
-Compilez le projet en utilisant le Makefile :
+Compilez le projet en mode test en utilisant le Makefile :
 
 ```bash
-$ make
+$ make test
 ```
 
-Lancez les tests de régression avec l'exécutable rush_hour_test :
+Puis lancez les tests de régression avec l'exécutable rush_hour_test :
 
 ```bash
 $ ./bin/rush_hour_test
+```
+
+Compilez le projet utilisant le Makefile :
+
+```bash
+$ make
 ```
 
 Lancez l'application en exécutant l'exécutable rush_hour :
