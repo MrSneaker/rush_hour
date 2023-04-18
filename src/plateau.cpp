@@ -113,10 +113,12 @@ void plateau::initBoard(string filename)
     }
 
     infile.close();
+    // cout << "Nombre de vehicules : " << vehicules.size() << endl;
+    // cout << "Complexite du plateau : " << finalComplexity << endl;
     assert(vehicules.size() > 0 && vehicules.size() <= 16 && "Le nombre de vehicules doit être compris entre 1 et 16");
     for (auto v : vehicules)
     {
-        assert(v.getLength() >= 2 && v.getLength() <= 3 && "La longueur d'un vehicule doit être comprise entre 1 et 4");
+        assert(v.getLength() >= 2 && v.getLength() <= 3 && "La longueur d'un vehicule doit être comprise entre 1 et 3");
         assert(v.getPositionCol() >= 0 && v.getPositionCol() < TAILLE && "La position d'un vehicule doit être comprise entre 0 et 5");
         assert(v.getPositionRow() >= 0 && v.getPositionRow() < TAILLE && "La position d'un vehicule doit être comprise entre 0 et 5");
     }

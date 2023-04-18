@@ -8,6 +8,10 @@ Affichage::Affichage()
     surface = NULL;
     font = NULL;
 
+    XClicked, YClicked = 0, 0;
+    Xmotion, Ymotion = 0, 0;
+    isPressed = false;
+
     b_playX = WIDTH / 2 - 130;
     b_playY = 60;
     b_playW = 260;
@@ -47,20 +51,29 @@ Affichage::Affichage()
 // fonction qui récupère le nombre de puzzle dans le dossier "Puzzles" et le stocke dans puzzleNumberMax
 void Affichage::getPuzzleNumberMax()
 {
+
     int index = 1;
+    puzzleTab.clear();
     DIR *dir;
     struct dirent *ent;
     if ((dir = opendir("data/puzzlesTXT")) != NULL)
     {
         while ((ent = readdir(dir)) != NULL)
         {
-            if (ent->d_name[0] != '.')
+            if (ent->d_name[0] != '.') // pour ne pas prendre en compte les fichiers cachés (.DS_Store par exemple)
             {
                 index++;
+                // on récupère le numéro du puzzle dans le nom du fichier
+                string puzzleNumber = ent->d_name;
+                puzzleNumber = puzzleNumber.substr(6, puzzleNumber.length() - 10);
+
+                puzzleTab.push_back(stoi(puzzleNumber));
+                sort(puzzleTab.begin(), puzzleTab.end());
             }
         }
         closedir(dir);
-        puzzleNumberMax = index - 1;
+
+        puzzleNumberMax = index - 1; // nombre de fichiers dans le dossier
         // cout << "value puzzleNumberMax = " << puzzleNumberMax << endl;
     }
     else
@@ -278,6 +291,33 @@ void Affichage::displayPuzzleChosen()
     }
 }
 
+int Affichage::getNewPuzzleNumber()
+{
+    cout << "Getting a new puzzle number... ------------------ " << endl;
+    cout << "puzzleTab.size() = " << puzzleTab.size() << endl;
+
+    for (int i = 1; i <= puzzleTab.size(); i++)
+    {
+
+        // si le numéro de puzzle est déjà dans le tableau, on passe au suivant
+        if (puzzleTab[i - 1] == i)
+        {
+            continue;
+        }
+        // sinon, on renvoie le numéro
+        else
+        {
+            cout << "return i = " << i << endl;
+            return i;
+        }
+    }
+
+    // si on arrive ici, c'est que tous les numéros de puzzle sont déjà utilisés
+    // on renvoie donc le numéro suivant
+    cout << "return puzzleTab.size() + 1 = " << puzzleTab.size() + 1 << endl;
+    return puzzleTab.size() + 1;
+}
+
 void Affichage::createNewPuzzle(std::promise<void> createPuzzlePromise)
 {
     cout << "--------------------------- Creating a new puzzle... ---------------------------" << endl;
@@ -294,17 +334,19 @@ void Affichage::createNewPuzzle(std::promise<void> createPuzzlePromise)
 
     cout << "Puzzle created in " << createTime << " seconds" << endl;
 
-    puzzle.writePuzzle("./data/puzzlesTXT/puzzle" + to_string(puzzleNumberMax + 1) + ".txt"); // Écrit le puzzle dans un nouveau fichier
+    int newPuzzleNumber = getNewPuzzleNumber(); // Récupère le numéro du nouveau puzzle
+
+    puzzle.writePuzzle("./data/puzzlesTXT/puzzle" + to_string(newPuzzleNumber) + ".txt"); // Écrit le puzzle dans un nouveau fichier
 
     cout << "New puzzle successfully created at : "
-         << "./data/puzzlesTXT/puzzle" + to_string(puzzleNumberMax + 1) + ".txt" << endl;
+         << "./data/puzzlesTXT/puzzle" + to_string(newPuzzleNumber) + ".txt" << endl;
 
-    getPuzzleNumberMax();                                                                     // Met à jour le nombre de puzzles disponibles
-    currentBoard.initBoard("./data/puzzlesTXT/puzzle" + to_string(puzzleNumberMax) + ".txt"); // Charge le fichier du dernier puzzle créé
+    currentBoard.initBoard("./data/puzzlesTXT/puzzle" + to_string(newPuzzleNumber) + ".txt"); // Charge le fichier du dernier puzzle créé
 
     cout << "--------------------------- New puzzle created ! ---------------------------" << endl;
+    getPuzzleNumberMax(); // Met à jour le nombre de puzzles disponibles
 
-    currentPuzzleNumber = puzzleNumberMax;                      // Met à jour le numéro de puzzle en cours
+    currentPuzzleNumber = newPuzzleNumber;                      // Met à jour le numéro de puzzle en cours
     currentBoardComplexity = currentBoard.getFinalComplexity(); // Met à jour la complexité du puzzle en cours
 }
 
@@ -363,7 +405,7 @@ int Affichage::displayMenu()
         // Affichage du numéro du puzzle
         SDL_SetRenderDrawColor(renderer, 10, 10, 10, 255);
         AfficherTexte(font, "Puzzle number : ", "", 0, WIDTH / 2 - 78, puzzleChosenY + puzzleChosenH + space, 0, 0, 0, 255);
-        AfficherTexte(font, "", "", currentPuzzleNumber, WIDTH / 2 + 102, puzzleChosenY + puzzleChosenH + space, 0, 0, 0, 255);
+        AfficherTexte(font, "", "", puzzleTab[currentPuzzleNumber - 1], WIDTH / 2 + 102, puzzleChosenY + puzzleChosenH + space, 0, 0, 0, 255);
 
         // Affichage de la complexité du puzzle
         AfficherTexte(font, "Complexity : ", "", 0, WIDTH / 2 - 78, puzzleChosenY + puzzleChosenH + space + 30, 0, 0, 0, 255);
@@ -419,8 +461,8 @@ int Affichage::displayMenu()
                 // Vérifie si le numéro de puzzle actuel est supérieur à 1
                 if (currentPuzzleNumber > 1)
                 {
-                    --currentPuzzleNumber;                                                                        // Décrémente le numéro de puzzle
-                    currentBoard.initBoard("./data/puzzlesTXT/puzzle" + to_string(currentPuzzleNumber) + ".txt"); // Charge le fichier de puzzle correspondant
+                    --currentPuzzleNumber;                                                                                       // Décrémente le numéro de puzzle
+                    currentBoard.initBoard("./data/puzzlesTXT/puzzle" + to_string(puzzleTab[currentPuzzleNumber - 1]) + ".txt"); // Charge le fichier de puzzle correspondant
                     currentBoardComplexity = currentBoard.getFinalComplexity();
                 }
 
@@ -432,20 +474,20 @@ int Affichage::displayMenu()
                 // Vérifie si le numéro de puzzle actuel est inférieur au maximum autorisé
                 if (currentPuzzleNumber < puzzleNumberMax)
                 {
-                    ++currentPuzzleNumber;                                                                        // Incrémente le numéro de puzzle
-                    currentBoard.initBoard("./data/puzzlesTXT/puzzle" + to_string(currentPuzzleNumber) + ".txt"); // Charge le fichier de puzzle correspondant
+                    ++currentPuzzleNumber;                                                                                       // Incrémente le numéro de puzzle
+                    currentBoard.initBoard("./data/puzzlesTXT/puzzle" + to_string(puzzleTab[currentPuzzleNumber - 1]) + ".txt"); // Charge le fichier de puzzle correspondant
                     currentBoardComplexity = currentBoard.getFinalComplexity();
                 }
             }
 
-            // Vérifie si le bouton de lecture a été cliqué
+            // Vérifie si le bouton solve a été cliqué
             else if (XClicked >= playButton.x && XClicked <= playButton.x + playButton.w &&
                      YClicked >= playButton.y && YClicked <= playButton.y + playButton.h)
             {
                 cout << "file : "
-                     << "./data/puzzlesTXT/puzzle" + to_string(currentPuzzleNumber) + ".txt" << endl;
-                currentBoard.initBoard("./data/puzzlesTXT/puzzle" + to_string(currentPuzzleNumber) + ".txt"); // Charge le fichier de puzzle correspondant
-                return 1;                                                                                     // Retourne 1 pour indiquer que le jeu doit être lancé
+                     << "./data/puzzlesTXT/puzzle" + to_string(puzzleTab[currentPuzzleNumber - 1]) + ".txt" << endl;
+                currentBoard.initBoard("./data/puzzlesTXT/puzzle" + to_string(puzzleTab[currentPuzzleNumber - 1]) + ".txt"); // Charge le fichier de puzzle correspondant
+                return 1;                                                                                                    // Retourne 1 pour indiquer que le jeu doit être lancé
             }
             // Vérifie si le bouton de création a été cliqué
             else if (XClicked >= createButton.x && XClicked <= createButton.x + createButton.w &&

@@ -33,17 +33,15 @@ private:
     TTF_Font *font;
     Graphe g;
     plateau currentBoard;
-    vector<plateau> boards;
     int currentBoardComplexity;
     bool isPressed;
-    int BoardNumber;
     int YClicked, XClicked;
     int Ymotion, Xmotion;
-    SDL_Cursor *cursor;
     int space = 27;
     int currentPuzzleNumber = 1;
     int puzzleNumberMax = 0;
     vector<bool> queueCreation;
+    vector<int> puzzleTab;
     int angle = 0;
 
     //-----------------Image-----------------
@@ -103,6 +101,7 @@ public:
     void displayPuzzleChosen();
     void createNewPuzzle(std::promise<void> createPuzzlePromise);
     void getPuzzleNumberMax();
+    int getNewPuzzleNumber();
     void updateCaretDimensions(unsigned int &x, unsigned int &y, unsigned int &w, unsigned int &h, int xMotion, int yMotion, int xOffset, string side);
     void updateButtonDimensions(int &x, int &y, int &w, int &h, int xMotion, int yMotion, int xOffset, int yOffset, string which);
 };
