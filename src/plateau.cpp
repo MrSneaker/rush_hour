@@ -90,6 +90,7 @@ void plateau::initBoard(string filename)
     reset();
     ifstream infile(filename);
     infile >> exitRow >> exitCol;
+    infile >> finalComplexity;
     int row, col, len, dir;
     while (infile >> row >> col >> len >> dir)
     {
@@ -109,7 +110,10 @@ void plateau::initBoard(string filename)
         }
         vehicules.push_back(v);
     }
+
     infile.close();
+    cout << "Nombre de vehicules : " << vehicules.size() << endl;
+    cout << "Complexite du plateau : " << finalComplexity << endl;
     assert(vehicules.size() > 0 && vehicules.size() <= 16 && "Le nombre de vehicules doit être compris entre 1 et 16");
     for (auto v : vehicules)
     {
@@ -299,6 +303,11 @@ void plateau::play()
 }
 //------------------------------------------------------------------------------
 
+int plateau::getFinalComplexity()
+{
+    return finalComplexity;
+}
+
 const int &plateau::getSize() const
 {
     return size;
@@ -311,7 +320,7 @@ int plateau::getExitRow()
 
 void plateau::setExitRow(int exitRow)
 {
-    exitRow = exitRow;
+    this->exitRow = exitRow;
 }
 
 int plateau::getExitCol()
@@ -321,7 +330,7 @@ int plateau::getExitCol()
 
 void plateau::setExitCol(int exitCol)
 {
-    exitCol = exitCol;
+    this->exitCol = exitCol;
 }
 
 int plateau::getVehiculRowStart()
@@ -331,7 +340,7 @@ int plateau::getVehiculRowStart()
 
 void plateau::setVehiculRowStart(int vehiculRowStart)
 {
-    vehiculRowStart = vehiculRowStart;
+    this->vehiculRowStart = vehiculRowStart;
 }
 
 int plateau::getVehiculColStart()
@@ -341,7 +350,7 @@ int plateau::getVehiculColStart()
 
 void plateau::setVehiculColStart(int vehiculColStart)
 {
-    vehiculColStart = vehiculColStart;
+    this->vehiculColStart = vehiculColStart;
 }
 
 int plateau::getVehicleLength()
@@ -351,7 +360,7 @@ int plateau::getVehicleLength()
 
 void plateau::setVehicleLength(int VehicleLength)
 {
-    VehicleLength = VehicleLength;
+    this->VehicleLength = VehicleLength;
 }
 
 bool plateau::getVehiculDirection()
@@ -361,7 +370,7 @@ bool plateau::getVehiculDirection()
 
 void plateau::setVehiculDirection(bool vehiculDirection)
 {
-    vehiculDirection = vehiculDirection;
+    this->vehiculDirection = vehiculDirection;
 }
 
 vector<vehicule> &plateau::getVehicules()

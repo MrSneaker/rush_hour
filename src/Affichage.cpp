@@ -1,7 +1,5 @@
 #include "Affichage.hpp"
-#include <dirent.h>
-#include <thread>
-#include <future>
+
 
 Affichage::Affichage()
 {
@@ -42,6 +40,7 @@ Affichage::Affichage()
     b_quitH = 50;
 
     currentBoard.initBoard("data/puzzlesTXT/puzzle" + to_string(currentPuzzleNumber) + ".txt");
+    currentBoardComplexity = currentBoard.getFinalComplexity();
 
     getPuzzleNumberMax();
 }
@@ -153,6 +152,7 @@ void Affichage::init()
 
     caretRight.loadFromFile("data/caret-right-solid.png", renderer);
     caretLeft.loadFromFile("data/caret-left-solid.png", renderer);
+    loadingIcon.loadFromFile("data/loadingIcon.png", renderer);
 }
 
 void Affichage::updateCaretDimensions(unsigned int &x, unsigned int &y, unsigned int &w, unsigned int &h, int xMotion, int yMotion, int xOffset, string side)
@@ -184,10 +184,10 @@ void Affichage::updateButtonDimensions(int &x, int &y, int &w, int &h, int xMoti
 
     if (xMotion >= x && xMotion <= x + w && yMotion >= y && yMotion <= y + h)
     {
-        if (which == "play" || which == "quit")
+        if (which == "Solve" || which == "quit")
         {
             x = WIDTH / 2 - 130;
-            y = which == "play" ? 60 - yOffset / 2 : b_createNewY + b_createNewH + space - yOffset / 2;
+            y = which == "Solve" ? 60 - yOffset / 2 : b_createNewY + b_createNewH + space - yOffset / 2;
             w = 260 + xOffset / 2;
             h = 50 + yOffset / 2;
         }
@@ -201,10 +201,10 @@ void Affichage::updateButtonDimensions(int &x, int &y, int &w, int &h, int xMoti
     }
     else
     {
-        if (which == "play" || which == "quit")
+        if (which == "Solve" || which == "quit")
         {
             x = WIDTH / 2 - 130;
-            y = which == "play" ? 60 : puzzleChosenY + puzzleChosenH + space + 33 + space + 33 + space + 50 + space;
+            y = which == "Solve" ? 60 : puzzleChosenY + puzzleChosenH + space + 33 + space + 33 + space + 50 + space;
             w = 260;
             h = 50;
         }
@@ -281,19 +281,32 @@ void Affichage::displayPuzzleChosen()
 
 void Affichage::createNewPuzzle(std::promise<void> createPuzzlePromise)
 {
-    cout << "creating a new puzzle..." << endl;
+    cout << "--------------------------- Creating a new puzzle... ---------------------------" << endl;
     Puzzle puzzle;
-    clock_t start = clock();
-    // genere un nouveau puzzle aleatoire avec la promesse createPuzzlePromise
-    puzzle.generateRandomPuzzle(std::move(createPuzzlePromise));
-    clock_t stop = clock(); // Génère un nouveau puzzle aléatoire
-    cout << "temps de process randomPuzzle : " << (double)(stop - start) / (CLOCKS_PER_SEC) << " secondes." << endl;
+
+    auto start = chrono::high_resolution_clock::now();
+    queueCreation.push_back(false);
+    puzzle.generateRandomPuzzle(std::move(createPuzzlePromise)); // genere un nouveau puzzle aleatoire avec la promesse createPuzzlePromise
+    auto stop = chrono::high_resolution_clock::now();
+    queueCreation.pop_back();
+
+    chrono::duration<double> duration = stop - start;
+    float createTime = std::round(duration.count() * 100) / 100;
+
+    cout << "Puzzle created in " << createTime << " seconds" << endl;
+
     puzzle.writePuzzle("./data/puzzlesTXT/puzzle" + to_string(puzzleNumberMax + 1) + ".txt"); // Écrit le puzzle dans un nouveau fichier
+
     cout << "New puzzle successfully created at : "
          << "./data/puzzlesTXT/puzzle" + to_string(puzzleNumberMax + 1) + ".txt" << endl;
+
     getPuzzleNumberMax();                                                                     // Met à jour le nombre de puzzles disponibles
     currentBoard.initBoard("./data/puzzlesTXT/puzzle" + to_string(puzzleNumberMax) + ".txt"); // Charge le fichier du dernier puzzle créé
-    currentPuzzleNumber = puzzleNumberMax;                                                    // Met à jour le numéro de puzzle en cours
+
+    cout << "--------------------------- New puzzle created ! ---------------------------" << endl;
+
+    currentPuzzleNumber = puzzleNumberMax;                      // Met à jour le numéro de puzzle en cours
+    currentBoardComplexity = currentBoard.getFinalComplexity(); // Met à jour la complexité du puzzle en cours
 }
 
 int Affichage::displayMenu()
@@ -317,7 +330,7 @@ int Affichage::displayMenu()
         // Bouttons
         SDL_SetRenderDrawColor(renderer, 127, 67, 229, 255);
         SDL_RenderFillRect(renderer, &playButton);
-        AfficherTexte(font, "Play", "", 0, b_playX + 110, b_playY + 10, 255, 255, 255, 255);
+        AfficherTexte(font, "Solve", "", 0, b_playX + 98, b_playY + 10, 255, 255, 255, 255);
         SDL_RenderFillRect(renderer, &createButton);
         AfficherTexte(font, "Create new puzzle", "", 0, b_createNewX + 110, b_createNewY + 10, 255, 255, 255, 255);
         SDL_RenderFillRect(renderer, &quitButton);
@@ -342,11 +355,8 @@ int Affichage::displayMenu()
         SDL_RenderDrawLine(renderer, puzzleChosenX - 2, puzzleChosenY - 2, puzzleChosenX - 2, puzzleChosenY + puzzleChosenH + 2);
         SDL_RenderDrawLine(renderer, puzzleChosenX + puzzleChosenW + 2, puzzleChosenY - 2, puzzleChosenX + puzzleChosenW + 2, puzzleChosenY + puzzleChosenH + 2);
         SDL_RenderDrawLine(renderer, puzzleChosenX - 2, puzzleChosenY + puzzleChosenH + 2, puzzleChosenX + puzzleChosenW + 2, puzzleChosenY + puzzleChosenH + 2);
+
         // slider
-        // SDL_Rect SliderRect = {puzzleChosenX, puzzleChosenY, puzzleChosenW, puzzleChosenH};
-        // SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-        // SDL_RenderFillRect(renderer, &SliderRect);
-        // puzzleChosen.draw(renderer, WIDTH / 2 - 225, playButton.y + playButton.h + space, 450, 450);
         displayPuzzleChosen();
         caretLeft.draw(renderer, caretLeftX, caretLeftY, caretLeftW, caretLeftH);
         caretRight.draw(renderer, caretRightX, caretRightY, caretRightW, caretRightH);
@@ -355,6 +365,10 @@ int Affichage::displayMenu()
         SDL_SetRenderDrawColor(renderer, 10, 10, 10, 255);
         AfficherTexte(font, "Puzzle number : ", "", 0, WIDTH / 2 - 78, puzzleChosenY + puzzleChosenH + space, 0, 0, 0, 255);
         AfficherTexte(font, "", "", currentPuzzleNumber, WIDTH / 2 + 102, puzzleChosenY + puzzleChosenH + space, 0, 0, 0, 255);
+
+        // Affichage de la complexité du puzzle
+        AfficherTexte(font, "Complexity : ", "", 0, WIDTH / 2 - 78, puzzleChosenY + puzzleChosenH + space + 30, 0, 0, 0, 255);
+        AfficherTexte(font, "", "", currentBoardComplexity, WIDTH / 2 + 60, puzzleChosenY + puzzleChosenH + space + 30, 0, 0, 0, 255);
 
         SDL_SetRenderDrawColor(renderer, 216, 223, 227, 255);
 
@@ -392,7 +406,7 @@ int Affichage::displayMenu()
         updateCaretDimensions(caretLeftX, caretLeftY, caretLeftW, caretLeftH, Xmotion, Ymotion, 102, "left");
         updateCaretDimensions(caretRightX, caretRightY, caretRightW, caretRightH, Xmotion, Ymotion, 49, "right");
 
-        updateButtonDimensions(b_playX, b_playY, b_playW, b_playH, Xmotion, Ymotion, 4, 4, "play");
+        updateButtonDimensions(b_playX, b_playY, b_playW, b_playH, Xmotion, Ymotion, 4, 4, "Solve");
         updateButtonDimensions(b_createNewX, b_createNewY, b_createNewW, b_createNewH, Xmotion, Ymotion, 4, 4, "create");
         updateButtonDimensions(b_quitX, b_quitY, b_quitW, b_quitH, Xmotion, Ymotion, 4, 4, "quit");
 
@@ -408,6 +422,7 @@ int Affichage::displayMenu()
                 {
                     --currentPuzzleNumber;                                                                        // Décrémente le numéro de puzzle
                     currentBoard.initBoard("./data/puzzlesTXT/puzzle" + to_string(currentPuzzleNumber) + ".txt"); // Charge le fichier de puzzle correspondant
+                    currentBoardComplexity = currentBoard.getFinalComplexity();
                 }
                 cout << "currentPuzzleNumber : " << currentPuzzleNumber << endl;
 
@@ -421,9 +436,11 @@ int Affichage::displayMenu()
                 {
                     ++currentPuzzleNumber;                                                                        // Incrémente le numéro de puzzle
                     currentBoard.initBoard("./data/puzzlesTXT/puzzle" + to_string(currentPuzzleNumber) + ".txt"); // Charge le fichier de puzzle correspondant
+                    currentBoardComplexity = currentBoard.getFinalComplexity();
                 }
                 cout << "currentPuzzleNumber : " << currentPuzzleNumber << endl;
             }
+
             // Vérifie si le bouton de lecture a été cliqué
             else if (XClicked >= playButton.x && XClicked <= playButton.x + playButton.w &&
                      YClicked >= playButton.y && YClicked <= playButton.y + playButton.h)
@@ -437,14 +454,14 @@ int Affichage::displayMenu()
             else if (XClicked >= createButton.x && XClicked <= createButton.x + createButton.w &&
                      YClicked >= createButton.y && YClicked <= createButton.y + createButton.h)
             {
-                std::promise<void> createPuzzlePromise;
-                std::future<void> createPuzzleFuture = createPuzzlePromise.get_future();
+                std::promise<void> createPuzzlePromise;                                  // Création d'une promesse
+                std::future<void> createPuzzleFuture = createPuzzlePromise.get_future(); // Création d'un futur
 
                 std::thread createPuzzleThread([this, createPuzzlePromise = std::move(createPuzzlePromise)]() mutable
-                                               { createNewPuzzle(std::move(createPuzzlePromise)); });
-                createPuzzleThread.detach();
-
-                // createNewPuzzle(); // Lance la création d'un nouveau puzzle
+                                               { createNewPuzzle(std::move(createPuzzlePromise)); }); /* Création d'un thread qui va créer un nouveau puzzle
+                                                                                                    et qui va attendre la promesse pour continuer, on utilise std::move pour
+                                                                                                    déplacer la promesse et éviter une copie et mutable pour pouvoir modifier la promesse */
+                createPuzzleThread.detach();                                                          // Détache le thread de l'application pour qu'il puisse continuer à tourner en arrière plan
             }
             // Vérifie si le bouton de sortie
             else if (XClicked >= quitButton.x && XClicked <= quitButton.x + quitButton.w &&
@@ -452,6 +469,13 @@ int Affichage::displayMenu()
             {
                 return -1; // Retourne -1 pour indiquer que le jeu doit être quitté
             }
+        }
+        if (!queueCreation.empty())
+        {
+
+            AfficherTexte(font, "Creating new puzzle :", "", 0, createButton.x + createButton.w / 2 - 108 - 15, createButton.y - 40, 0, 0, 0, 255);
+            loadingIcon.draw(renderer, createButton.x + createButton.w / 2 + 108 + 15, createButton.y - 40, 30, 30, angle);
+            angle += 10;
         }
 
         isPressed = false;
@@ -463,7 +487,7 @@ int Affichage::displayMenu()
     return -1;
 }
 
-bool Affichage::displayMenuBar(int BoardNumber)
+bool Affichage::displayMenuBar(int BoardNumber, float solveTime)
 {
 
     // affichage de la barre de menu qui se trouve en dessous de chaque board
@@ -480,23 +504,25 @@ bool Affichage::displayMenuBar(int BoardNumber)
     SDL_RenderFillRect(renderer, &rect);
 
     // affichage du texte "Quitter"
-    AfficherTexte(font, "Quitter", "", 0, 32, HEIGHT - 65, 255, 255, 255, 255);
+    AfficherTexte(font, "Quit", "", 0, 45, HEIGHT - 65, 255, 255, 255, 255);
 
-    // affichage du numéro du board en noir
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
-    AfficherTexte(font, "", "Board : ", BoardNumber, 350, HEIGHT - 65, 0, 0, 0, 255);
+    // affichage du numéro du board
+    AfficherTexte(font, "", "Step : ", BoardNumber, 350, HEIGHT - 65, 0, 0, 0, 255);
+
+    AfficherTexte(font, "Solvetime : ", "", 0, 600, HEIGHT - 65, 0, 0, 0, 255);
+    AfficherTexte(font, "", "", solveTime, 720, HEIGHT - 65, 0, 0, 0, 255);
+    AfficherTexte(font, "s", "", 0, 770, HEIGHT - 65, 0, 0, 0, 255);
 
     // si on clique sur le bouton "Quitter"
     if (isPressed && XClicked >= 20 && XClicked <= 120 && YClicked >= HEIGHT - 75 && YClicked <= HEIGHT - 25)
     {
-
         return false;
     }
 
     return true;
 }
 
-bool Affichage::displayBoard(State s)
+bool Affichage::displayBoard(State s, float solveTime)
 {
     SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
     SDL_RenderClear(renderer);
@@ -553,7 +579,7 @@ bool Affichage::displayBoard(State s)
         ++i;
     }
 
-    return displayMenuBar(s.getBoard_aff().getMoveCount());
+    return displayMenuBar(s.getBoard_aff().getMoveCount(), solveTime);
 }
 
 // Boucle du jeu
@@ -580,7 +606,13 @@ int Affichage::display()
     Graphe g;
     State s;
     s.setBoard(currentBoard);
+    // calcul le temps d'execution de l'algorithme
+    auto start = chrono::high_resolution_clock::now();
     g.breadthFirstSearch(s, 100000);
+    auto end = chrono::high_resolution_clock::now();
+    chrono::duration<double> elapsed = end - start;
+    float solveTime = elapsed.count();
+    solveTime = roundf(solveTime * 100) / 100;
 
     while (display)
     {
@@ -602,7 +634,7 @@ int Affichage::display()
                     if (i > 0)
                     {
                         i--;
-                        displayBoard(g.path[i]);
+                        displayBoard(g.path[i], solveTime);
                     }
 
                     break;
@@ -611,7 +643,7 @@ int Affichage::display()
                     if (i < g.path.size() - 1)
                     {
                         i++;
-                        displayBoard(g.path[i]);
+                        displayBoard(g.path[i], solveTime);
                     }
                     break;
                 }
@@ -633,7 +665,7 @@ int Affichage::display()
                 break;
             }
         }
-        if (!displayBoard(g.path[i]))
+        if (!displayBoard(g.path[i], solveTime))
         {
             display = false;
         }

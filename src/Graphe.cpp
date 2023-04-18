@@ -17,7 +17,7 @@ void Graphe::makeNeighbor(State &s)
     plateau current_board = s.getBoard();
     int size = current_board.getVehicules().size();
     for (int i = start; i < size; i++)
-        for (int pas = 1; pas < 4; pas++)
+        for (int pas = 1; pas < 5; pas++)
         {
             vehicule vF = current_board.getVehicules()[i];
             vehicule vB = current_board.getVehicules()[i];
@@ -51,8 +51,8 @@ void Graphe::makeNeighbor(State &s)
 
 int Graphe::breadthFirstSearch(State s, int max_iterations)
 {
+    // s.getBoard().displayBoard();
     int nb_coup = 0;
-    cout << "processing.." << endl;
     State test;
     int iteration = 0;
     q.push(s);
@@ -61,6 +61,7 @@ int Graphe::breadthFirstSearch(State s, int max_iterations)
     State win_state;
     State last_state;
     s.setIsVisited(true);
+    // cout << "process" << endl;
     bool win = false;
     vector<State *> parents;
     while (!q.empty() && iteration < max_iterations)
@@ -96,12 +97,11 @@ int Graphe::breadthFirstSearch(State s, int max_iterations)
     }
     if (!win)
     {
-        cout << "puzzle irrésolvable" << endl;
         nb_coup = -1;
     }
     else
         nb_coup = win_state.getBoard().getMoveCount();
-    cout << "itération : " << iteration << endl;
+    // cout << "iteration : " << iteration << endl;
     path.push_back(win_state);
     State *parent = win_state.getParent();
     while (parent != nullptr)

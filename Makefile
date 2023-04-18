@@ -7,7 +7,7 @@ bin/rush_hour_test : obj/rush_hour_test.o obj/plateau.o obj/vehicule.o obj/State
 	g++ -o bin/rush_hour_test obj/rush_hour_test.o obj/plateau.o obj/vehicule.o obj/State.o obj/Graphe.o obj/Affichage.o obj/Image.o obj/Puzzle.o -ggdb -fopenmp $(SDL2)
 	
 obj/rush_hour_test.o : src/rush_hour_test.cpp 
-	g++ -c -o obj/rush_hour_test.o src/rush_hour_test.cpp -ggdb
+	g++ -c -o obj/rush_hour_test.o src/rush_hour_test.cpp -ggdb -fopenmp
 
 obj/State.o : src/State.cpp src/State.hpp src/plateau.hpp
 	g++ -c -o obj/State.o src/State.cpp -ggdb

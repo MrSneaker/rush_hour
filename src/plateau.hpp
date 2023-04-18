@@ -30,6 +30,7 @@ private:
     int vehiculRowStart, vehiculColStart, VehicleLength;
     int moveCount;
     bool vehiculDirection; // true = horizontal, false = vertical
+    int finalComplexity;
 
 public:
     plateau();
@@ -75,6 +76,9 @@ public:
 
     bool getVehiculDirection();
     void setVehiculDirection(bool vehiculDirection);
+
+    int getFinalComplexity();
+    void setFinalComplexity(int finalComplexity);
 
     vector<vehicule> &getVehicules();
     void setVehicules(vector<vehicule> vehicules);

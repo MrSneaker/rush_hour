@@ -90,7 +90,6 @@ bool Puzzle::isValidPlacement(vehicule &v)
             if (p.getBoardState().board_state[row][v.getPositionCol()])
             {
                 blockedCount++;
-                // cout << "blockedCount : " << blockedCount << endl;
             }
             else
             {
@@ -116,12 +115,14 @@ bool Puzzle::isValidPlacement(vehicule &v)
     return true;
 }
 
-void Puzzle::generateRandomPuzzle(std::promise<void> createPuzzlePromise)
+bool Puzzle::generateRandomPuzzle(std::promise<void> createPuzzlePromise)
 {
     p.reset();
     srand(time(NULL));
+    // cout << "exit r : " << p.getExitRow() << endl;
+    p.setExitRow(rand() % 5 + 1);
+    // cout << "exit r : " << p.getExitRow() << endl;
     int nb_vehicules = rand() % 6 + 10; // entre 10 et 15
-    cout << "Nombre de véhicules : " << nb_vehicules << endl;
     int length_startVec = 2;
 
     vehicule redCar(length_startVec, 0, p.getExitRow(), true);
@@ -135,8 +136,9 @@ void Puzzle::generateRandomPuzzle(std::promise<void> createPuzzlePromise)
         int position_col = rand() % 6;
         int position_row = rand() % 6;
         vehicule v = randomVehicule(position_row, position_col);
-        while (!isValidPlacement(v) && (iteration < 200))
+        while (!isValidPlacement(v) && (iteration < 100))
         {
+            // cout << "itération random : " << iteration << endl;
             v.getLength() == 2 ? v.setLength(3) : v.setLength(2);
             int position_col = rand() % 6;
             int position_row = rand() % 6;
@@ -154,6 +156,8 @@ void Puzzle::generateRandomPuzzle(std::promise<void> createPuzzlePromise)
         }
     }
     createPuzzlePromise.set_value();
+
+    return true;
 }
 
 bool Puzzle::writePuzzle(string filename)
@@ -163,6 +167,7 @@ bool Puzzle::writePuzzle(string filename)
     if (file.is_open())
     {
         file << p.getExitRow() << " " << p.getExitCol() << endl;
+        file << complexite << endl;
         for (int i = 0; i < p.getVehicules().size(); i++)
         {
             vehicule v = p.getVehicules()[i];
