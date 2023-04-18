@@ -84,7 +84,10 @@ Compilez les tests en utilisant le Makefile :
 $ make test
 ```
 
+
 Lancez les tests de régression avec l'exécutable rush_hour_test :
+
+- Notez que vous pouvez utilisez valgrind sur cet executable.
 
 ```bash
 $ ./bin/rush_hour_test
