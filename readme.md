@@ -78,6 +78,12 @@ Compilez le projet en utilisant le Makefile :
 $ make
 ```
 
+Compilez les tests en utilisant le Makefile :
+
+```bash
+$ make test
+```
+
 Lancez les tests de régression avec l'exécutable rush_hour_test :
 
 ```bash
@@ -92,10 +98,10 @@ $ ./bin/rush_hour
 
 ## Utilisation
 
-- Pour lancer la résolution du puzzle courant ( celui qui est affiché au centre sur le menu ) appuyer sur le boutton `Solve`
+- Pour lancer la résolution du puzzle courant ( celui qui est affiché au centre sur le menu ) appuyez sur le boutton `Solve`
   Dans la fenêtre de résolution vous pourrez naviguer entre les différentes étapes de résolution en appuyant sur les touche `flèche gauche`( pour aller en arrière ) et `flêche droit` ( pour avancer dans la solution ).  
-  Il y'aura aussi afficher le temps de résolution du puzzle avec `solveTime`
-- Pour lancer la création d'un nouveau puzzle, appuyer sur le boutton `Create new puzzle`
+  Il y aura aussi affiché le temps de résolution du puzzle avec `solveTime`
+- Pour lancer la création d'un nouveau puzzle, appuyez sur le boutton `Create new puzzle`
 - Les flèches à droite et à gauche du puzzle central permettant de naviguer entre les différents puzzle stocké dans le fichier `data/puzzlesTXT`
 
 ### Importer un nouveau puzzle
@@ -120,16 +126,16 @@ pour rappel le puzzle doit être de la forme :
 5 1 2 1   ##
 ```
 
-Si votre puzzle.txt ne contient pas de complexité rajouter 0 à la place sinon le code ne va pas fonctionner !
+Si votre puzzle.txt ne contient pas de complexité rajoutez 0 à la place sinon le code ne va pas fonctionner !
 
-Si tout est bon ajouter votre puzzle dans data/puzzlesTXT et relancer votre programme avec  
+Si tout est bon ajoutez votre puzzle dans data/puzzlesTXT et relancez votre programme avec  
 `$ make && ./bin/rush_hour` ( tips )
 
 Dans le dossier data/puzzlesInteressants vous trouverez des puzzles avec une complexité intéressantes.
 
 ---
 
-- Pour quitter l'application appuyer sur le bouton `quit`
+- Pour quitter l'application appuyez sur le bouton `quit`
 
 ## Contributeurs
 
