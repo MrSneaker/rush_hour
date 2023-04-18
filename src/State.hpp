@@ -8,18 +8,22 @@
 class State
 {
 private:
-    bool isVisited;          // true si l'état a déjà été visité
-    vector<State> neighbors; // liste des états voisins
-    State *parent;           // pointeur vers l'état parent
-    int cost;                // nombre de coup pour arriver à cet état
+    // true si l'état a déjà été visité
+    bool isVisited;
 
-    plateau board; // plateau de jeu
+    // pointeur vers l'état parent
+    State *parent;
+
+    // plateau de jeu
+    plateau board;
 
 public:
     State();
+    // constructeur par copie
     State(const State &s);
     ~State();
 
+    // operateur d'égalité
     bool operator==(const State &s) const;
 
     /* Getters et Setters */
@@ -29,16 +33,14 @@ public:
     State *getParent() const;
     void setParent(State *parent);
 
-    int getCost();
-    void setCost(int cost);
     const plateau &getBoard() const;
+
+    // accesseur non const du plateau pour affichage
     plateau &getBoard_aff();
+
     void setBoard(const plateau &board);
 
     vector<State> &getNeighbors();
-
-    /* Méthodes */
-    void addNeighbor(State neighbor);
 };
 
 #endif

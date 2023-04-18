@@ -79,10 +79,20 @@ void vehicule::moveBackwardToDir(int pas)
 
 bool vehicule::operator!=(const vehicule &v) const
 {
-    return this->length != v.length && this->positionCol != v.positionCol && this->positionRow != v.positionRow && this->direction != v.direction;
+    if ((this->length != v.length))
+        return true;
+    if ((this->direction != v.direction))
+        return true;
+
+    return ((this->positionCol != v.positionCol) && (this->positionRow != v.positionRow));
 }
 
 bool vehicule::operator==(const vehicule &v) const
 {
-    return this->length == v.length && this->positionCol == v.positionCol && this->positionRow == v.positionRow && this->direction == v.direction;
+    if ((this->length == v.length))
+        return true;
+    if ((this->direction == v.direction))
+        return true;
+
+    return ((this->positionCol == v.positionCol) && (this->positionRow == v.positionRow));
 }

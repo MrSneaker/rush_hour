@@ -102,13 +102,16 @@ bool Puzzle::isValidPlacement(vehicule &v)
             }
         }
     }
-
+    // on test si v est plaçable sur un plateau tampon, avec un parcour de graphe de celui-ci.
     plateau p_test(p);
     p_test.getVehicules().push_back(v);
     p_test.updateBoard();
     s.setBoard(p_test);
 
     int res = g.breadthFirstSearch(s, 100000);
+
+    // si la situation est irrésolvable ou pas mieux que la précédente,
+    // on ne la garde pas.
     if (res == -1 || res <= complexite)
         return false;
     complexite = res;
@@ -117,28 +120,28 @@ bool Puzzle::isValidPlacement(vehicule &v)
 
 bool Puzzle::generateRandomPuzzle(std::promise<void> createPuzzlePromise)
 {
+    // reset du plateau
     p.reset();
+    // on retire une nouvelle graine aléatoire
     srand(time(NULL));
-    // cout << "exit r : " << p.getExitRow() << endl;
     p.setExitRow(rand() % 5 + 1);
-    // cout << "exit r : " << p.getExitRow() << endl;
     int nb_vehicules = rand() % 6 + 10; // entre 10 et 15
     int length_startVec = 2;
 
+    // on place la voiture à sortir
     vehicule redCar(length_startVec, 0, p.getExitRow(), true);
     p.getVehicules().push_back(redCar);
-    // length_startVec == 2 ? p.moveVehiculeB(p.getVehicules()[0], 4, 1) : p.moveVehiculeB(p.getVehicules()[0], 3, 1);
 
     p.updateBoard();
     for (int i = 0; i < nb_vehicules; ++i)
     {
+        // on compte le nombre de tours pour limiter le temps d'execution.
         int iteration = 0;
         int position_col = rand() % 6;
         int position_row = rand() % 6;
         vehicule v = randomVehicule(position_row, position_col);
         while (!isValidPlacement(v) && (iteration < 100))
         {
-            // cout << "itération random : " << iteration << endl;
             v.getLength() == 2 ? v.setLength(3) : v.setLength(2);
             int position_col = rand() % 6;
             int position_row = rand() % 6;
@@ -149,7 +152,7 @@ bool Puzzle::generateRandomPuzzle(std::promise<void> createPuzzlePromise)
         {
             break;
         }
-        else
+        else // on place le véhicule et on met à jour le plateau
         {
             placeVehicule(v);
             p.updateBoard();
@@ -189,22 +192,30 @@ int Puzzle::getComplexite()
 
 void Puzzle::test_regression()
 {
-    // cout << "Test de regression de la classe Puzzle" << endl;
-    // cout << "------------------------------------" << endl;
-    // cout << "Test de la fonction randomVehicule" << endl;
-    // cout << "------------------------------------" << endl;
+    Puzzle p;
+    cout << "Test de regression de la classe Puzzle" << endl;
+    cout << "------------------------------------" << endl;
+    cout << "Test de la fonction randomVehicule" << endl;
+    cout << "------------------------------------" << endl;
 
-    // vehicule v = randomVehicule(0, 0);
-    // cout << "Test de la fonction placeVehicule" << endl;
-    // cout << "------------------------------------" << endl;
+    vehicule v = p.randomVehicule(2, 5);
+    vehicule v2 = p.randomVehicule(2, 5);
+    assert(v == v2);
 
-    // placeVehicule(v);
-    // cout << "Test de la fonction isValidPlacement" << endl;
-    // cout << "------------------------------------" << endl;
+    cout << "Test de la fonction placeVehicule" << endl;
+    cout << "------------------------------------" << endl;
+
+    p.placeVehicule(v);
+    assert(p.p.getVehicules().size() == 1);
+
+    cout << "Test de la fonction isValidPlacement" << endl;
+    cout << "------------------------------------" << endl;
+
+    assert(p.isValidPlacement(v2) == false);
+
     // cout << "Test de la fonction generateRandomPuzzle" << endl;
     // cout << "------------------------------------" << endl;
-    // generateRandomPuzzle();
-    // cout << "Test de la fonction writePuzzle" << endl;
-    // cout << "------------------------------------" << endl;
-    // writePuzzle("./data/puzzle2test.txt");
+    // Puzzle p1;
+    // std::promise<void> createPuzzlePromise;
+    // assert(p1.generateRandomPuzzle(std::move(createPuzzlePromise)) == true);
 }

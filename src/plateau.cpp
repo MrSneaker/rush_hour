@@ -49,6 +49,7 @@ plateau::plateau(const plateau &p)
     this->vehiculDirection = p.vehiculDirection;
     this->moveCount = p.moveCount;
     this->states = p.states;
+    updateBoard();
 }
 
 plateau::~plateau()
@@ -112,8 +113,6 @@ void plateau::initBoard(string filename)
     }
 
     infile.close();
-    cout << "Nombre de vehicules : " << vehicules.size() << endl;
-    cout << "Complexite du plateau : " << finalComplexity << endl;
     assert(vehicules.size() > 0 && vehicules.size() <= 16 && "Le nombre de vehicules doit être compris entre 1 et 16");
     for (auto v : vehicules)
     {
@@ -271,39 +270,7 @@ bool plateau::win_board() const
     return (vehicules[0].getPositionCol() + (vehicules[0].getLength() - 1) == exitCol) && (vehicules[0].getPositionRow() == exitRow);
 }
 
-bool plateau::is_start_board() const
-{
-    return (vehicules[0].getPositionCol() == 0) && (vehicules[0].getPositionRow() == exitRow);
-}
-
-void plateau::play()
-{
-    moveVehicule(vehicules[9], false, 1, true);
-    // displayBoard();
-    // moveVehicule(vehicules[10], false, 1, true);
-    // displayBoard();
-    // moveVehicule(vehicules[12], true, 2, true);
-    // displayBoard();
-    // moveVehicule(vehicules[2], true, 3, true);
-    // displayBoard();
-    // moveVehicule(vehicules[0], true, 1, true);
-    // displayBoard();
-    // moveVehicule(vehicules[1], true, 1, true);
-    // displayBoard();
-    // moveVehicule(vehicules[3], false, 3, true);
-    // displayBoard();
-    // moveVehicule(vehicules[4], false, 1, true);
-    // displayBoard();
-    // moveVehicule(vehicules[0], true, 2, true);
-    // displayBoard();
-    // moveVehicule(vehicules[10], false, 1, true);
-    // displayBoard();
-    // moveVehicule(vehicules[2], false, 2, true);
-    // displayBoard();
-}
-//------------------------------------------------------------------------------
-
-int plateau::getFinalComplexity()
+const int &plateau::getFinalComplexity()
 {
     return finalComplexity;
 }
@@ -405,7 +372,7 @@ bool plateau::operator==(const plateau &p2) const
     {
         return false;
     }
-    for (size_t i = 0; i < this->vehicules.size(); i++)
+    for (unsigned long int i = 0; i < this->vehicules.size(); i++)
     {
         if (this->vehicules[i] != p2.vehicules[i])
         {
@@ -429,4 +396,27 @@ bool plateau::operator==(const plateau &p2) const
         return false;
     }
     return true;
+}
+
+void plateau::test_regression()
+{
+    cout << "Test de régression de la classe plateau" << endl;
+
+    plateau p("data/puzzlesTXT/puzzle1.txt");
+    assert(p.getVehicules().size() == 13);
+
+    plateau p2(p);
+    assert(p2.getVehicules().size() == 13);
+    assert(p == p2);
+
+    assert(p.win_board() == false);
+
+    assert(p.moveVehicule(p.getVehicules()[2], true, 1, true) == true);
+
+    assert(p.getVehicules()[2].getPositionRow() == 1);
+
+    p.updateBoard();
+    assert((p == p2) == false);
+
+    cout << "------------------------------------" << endl;
 }

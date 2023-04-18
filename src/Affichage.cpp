@@ -1,6 +1,5 @@
 #include "Affichage.hpp"
 
-
 Affichage::Affichage()
 {
     window = NULL;
@@ -424,7 +423,6 @@ int Affichage::displayMenu()
                     currentBoard.initBoard("./data/puzzlesTXT/puzzle" + to_string(currentPuzzleNumber) + ".txt"); // Charge le fichier de puzzle correspondant
                     currentBoardComplexity = currentBoard.getFinalComplexity();
                 }
-                cout << "currentPuzzleNumber : " << currentPuzzleNumber << endl;
 
                 // Vérifie si le bouton de déplacement à droite a été cliqué
             }
@@ -438,7 +436,6 @@ int Affichage::displayMenu()
                     currentBoard.initBoard("./data/puzzlesTXT/puzzle" + to_string(currentPuzzleNumber) + ".txt"); // Charge le fichier de puzzle correspondant
                     currentBoardComplexity = currentBoard.getFinalComplexity();
                 }
-                cout << "currentPuzzleNumber : " << currentPuzzleNumber << endl;
             }
 
             // Vérifie si le bouton de lecture a été cliqué
@@ -457,11 +454,13 @@ int Affichage::displayMenu()
                 std::promise<void> createPuzzlePromise;                                  // Création d'une promesse
                 std::future<void> createPuzzleFuture = createPuzzlePromise.get_future(); // Création d'un futur
 
+                /* Création d'un thread qui va créer un nouveau puzzle
+                    et qui va attendre la promesse pour continuer, on utilise std::move pour
+                    déplacer la promesse et éviter une copie et mutable pour pouvoir modifier la promesse */
                 std::thread createPuzzleThread([this, createPuzzlePromise = std::move(createPuzzlePromise)]() mutable
-                                               { createNewPuzzle(std::move(createPuzzlePromise)); }); /* Création d'un thread qui va créer un nouveau puzzle
-                                                                                                    et qui va attendre la promesse pour continuer, on utilise std::move pour
-                                                                                                    déplacer la promesse et éviter une copie et mutable pour pouvoir modifier la promesse */
-                createPuzzleThread.detach();                                                          // Détache le thread de l'application pour qu'il puisse continuer à tourner en arrière plan
+                                               { createNewPuzzle(std::move(createPuzzlePromise)); });
+
+                createPuzzleThread.detach(); // Détache le thread de l'application pour qu'il puisse continuer à tourner en arrière plan
             }
             // Vérifie si le bouton de sortie
             else if (XClicked >= quitButton.x && XClicked <= quitButton.x + quitButton.w &&
@@ -669,11 +668,6 @@ int Affichage::display()
         {
             display = false;
         }
-
-        // if (!displayBoard(s))
-        // {
-        //     display = false;
-        // }
 
         SDL_RenderPresent(renderer);
         SDL_RenderClear(renderer);

@@ -11,6 +11,7 @@
 #include <fstream>
 #include <random>
 #include <future>
+#include <assert.h>
 
 using namespace std;
 
@@ -29,8 +30,6 @@ public:
     bool isValidPlacement(vehicule &v);
     bool generateRandomPuzzle(std::promise<void> createPuzzlePromise);
     bool writePuzzle(string filename);
-    void multi_task_validPlacement(int &res, Graphe g, State s, int depth);
-    bool generatePuzzleWithBacktracking(int row, int col);
     void test_regression();
     int getComplexite();
 };
