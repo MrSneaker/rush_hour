@@ -48,33 +48,31 @@ Affichage::Affichage()
     getPuzzleNumberMax();
 }
 
-// fonction qui récupère le nombre de puzzle dans le dossier "Puzzles" et le stocke dans puzzleNumberMax
 void Affichage::getPuzzleNumberMax()
 {
 
     int index = 1;
     puzzleTab.clear();
-    DIR *dir;
-    struct dirent *ent;
-    if ((dir = opendir("data/puzzlesTXT")) != NULL)
+    DIR *dir;                                       // pointeur sur un dossier
+    struct dirent *ent;                             // structure qui contient les informations sur un fichier
+    if ((dir = opendir("data/puzzlesTXT")) != NULL) // on ouvre le dossier
     {
-        while ((ent = readdir(dir)) != NULL)
+        while ((ent = readdir(dir)) != NULL) // on lit le dossier
         {
             if (ent->d_name[0] != '.') // pour ne pas prendre en compte les fichiers cachés (.DS_Store par exemple)
             {
                 index++;
-                // on récupère le numéro du puzzle dans le nom du fichier
-                string puzzleNumber = ent->d_name;
-                puzzleNumber = puzzleNumber.substr(6, puzzleNumber.length() - 10);
 
-                puzzleTab.push_back(stoi(puzzleNumber));
-                sort(puzzleTab.begin(), puzzleTab.end());
+                // on récupère le numéro du puzzle dans le nom du fichier
+                string puzzleNumber = ent->d_name;                                 // puzzleNumber = "puzzle1.txt"
+                puzzleNumber = puzzleNumber.substr(6, puzzleNumber.length() - 10); // puzzleNumber = "1"
+
+                puzzleTab.push_back(stoi(puzzleNumber));  // on ajoute le numéro du puzzle dans le tableau
+                sort(puzzleTab.begin(), puzzleTab.end()); // on trie le tableau
             }
         }
         closedir(dir);
-
         puzzleNumberMax = index - 1; // nombre de fichiers dans le dossier
-        // cout << "value puzzleNumberMax = " << puzzleNumberMax << endl;
     }
     else
     {
@@ -93,12 +91,13 @@ Affichage::~Affichage()
     caretLeft.~Image();
     puzzleChosen.~Image();
 
+    puzzleTab.clear();
+
     TTF_Quit();
 
     SDL_Quit();
 }
 
-// Affiche du texte selon l'entrée
 void Affichage::AfficherTexte(TTF_Font *font, string Msg, string MsgWithValeur, float Valeur, int x, int y, unsigned char r, unsigned char g, unsigned char b, int a)
 {
 
@@ -108,10 +107,10 @@ void Affichage::AfficherTexte(TTF_Font *font, string Msg, string MsgWithValeur, 
 
     if (Msg == "")
     {
-        ostringstream Val;                      // convertir float en string
-        Val << Valeur;                          //
+        ostringstream Val; // convertir float en string
+        Val << Valeur;
         string val = MsgWithValeur + Val.str(); // concatener les deux strings
-        text = val.c_str();
+        text = val.c_str();                     // convertir string en char
     }
 
     SDL_Surface *surface = TTF_RenderText_Blended(font, text, color);
@@ -129,18 +128,21 @@ void Affichage::AfficherTexte(TTF_Font *font, string Msg, string MsgWithValeur, 
 
 void Affichage::init()
 {
+    // initialisation de la SDL
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
     {
         cout << "Erreur d'initialisation de la SDL : " << SDL_GetError() << endl;
         exit(EXIT_FAILURE);
     }
 
+    // initialisation de SDL_ttf
     if (TTF_Init() != 0)
     {
         cout << "Erreur d'initialisation de SDL_ttf : " << TTF_GetError() << endl;
         exit(EXIT_FAILURE);
     }
 
+    // initialisation de la fenêtre
     window = SDL_CreateWindow("RushHour", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, WIDTH, HEIGHT, SDL_WINDOW_SHOWN);
     if (window == NULL)
     {
@@ -148,6 +150,7 @@ void Affichage::init()
         exit(EXIT_FAILURE);
     }
 
+    // initialisation du renderer
     renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
     if (renderer == NULL)
     {
@@ -155,6 +158,7 @@ void Affichage::init()
         exit(EXIT_FAILURE);
     }
 
+    // initialisation de la police
     font = TTF_OpenFont("data/arial.ttf", 24);
     if (font == NULL)
     {
@@ -162,6 +166,7 @@ void Affichage::init()
         exit(EXIT_FAILURE);
     }
 
+    // initialisation des images (récupération des images dans le dossier data)
     caretRight.loadFromFile("data/caret-right-solid.png", renderer);
     caretLeft.loadFromFile("data/caret-left-solid.png", renderer);
     loadingIcon.loadFromFile("data/loadingIcon.png", renderer);
@@ -293,12 +298,8 @@ void Affichage::displayPuzzleChosen()
 
 int Affichage::getNewPuzzleNumber()
 {
-    cout << "Getting a new puzzle number... ------------------ " << endl;
-    cout << "puzzleTab.size() = " << puzzleTab.size() << endl;
-
     for (int i = 1; i <= puzzleTab.size(); i++)
     {
-
         // si le numéro de puzzle est déjà dans le tableau, on passe au suivant
         if (puzzleTab[i - 1] == i)
         {
@@ -307,30 +308,28 @@ int Affichage::getNewPuzzleNumber()
         // sinon, on renvoie le numéro
         else
         {
-            cout << "return i = " << i << endl;
             return i;
         }
     }
-
-    // si on arrive ici, c'est que tous les numéros de puzzle sont déjà utilisés
-    // on renvoie donc le numéro suivant
-    cout << "return puzzleTab.size() + 1 = " << puzzleTab.size() + 1 << endl;
+    // si on a parcouru tout le tableau et qu'il n'y a pas de numéro manquant, on renvoie le numéro suivant
     return puzzleTab.size() + 1;
 }
 
 void Affichage::createNewPuzzle(std::promise<void> createPuzzlePromise)
 {
     cout << "--------------------------- Creating a new puzzle... ---------------------------" << endl;
+    cout << "pending..." << endl;
+
     Puzzle puzzle;
 
-    auto start = chrono::high_resolution_clock::now();
-    queueCreation.push_back(false);
+    auto start = chrono::high_resolution_clock::now();           // Début du chrono
+    queueCreation.push_back(false);                              // Ajoute l'élément à la queue de création
     puzzle.generateRandomPuzzle(std::move(createPuzzlePromise)); // genere un nouveau puzzle aleatoire avec la promesse createPuzzlePromise
-    auto stop = chrono::high_resolution_clock::now();
-    queueCreation.pop_back();
+    auto stop = chrono::high_resolution_clock::now();            // Fin du chrono
+    queueCreation.pop_back();                                    // Supprime l'élément de la queue de création
 
-    chrono::duration<double> duration = stop - start;
-    float createTime = std::round(duration.count() * 100) / 100;
+    chrono::duration<double> duration = stop - start;            // Calcul du temps d'exécution
+    float createTime = std::round(duration.count() * 100) / 100; // Arrondi à 2 décimales
 
     cout << "Puzzle created in " << createTime << " seconds" << endl;
 
@@ -367,7 +366,7 @@ int Affichage::displayMenu()
         createButton = {b_createNewX, b_createNewY, b_createNewW, b_createNewH};
         quitButton = {b_quitX, b_quitY, b_quitW, b_quitH};
 
-        // Affichage des Elements du menu
+        // Affichage des elements du menu
         // Bouttons
         SDL_SetRenderDrawColor(renderer, 127, 67, 229, 255);
         SDL_RenderFillRect(renderer, &playButton);
@@ -463,7 +462,7 @@ int Affichage::displayMenu()
                 {
                     --currentPuzzleNumber;                                                                                       // Décrémente le numéro de puzzle
                     currentBoard.initBoard("./data/puzzlesTXT/puzzle" + to_string(puzzleTab[currentPuzzleNumber - 1]) + ".txt"); // Charge le fichier de puzzle correspondant
-                    currentBoardComplexity = currentBoard.getFinalComplexity();
+                    currentBoardComplexity = currentBoard.getFinalComplexity();                                                  // Met à jour la complexité du puzzle
                 }
 
                 // Vérifie si le bouton de déplacement à droite a été cliqué
@@ -476,7 +475,7 @@ int Affichage::displayMenu()
                 {
                     ++currentPuzzleNumber;                                                                                       // Incrémente le numéro de puzzle
                     currentBoard.initBoard("./data/puzzlesTXT/puzzle" + to_string(puzzleTab[currentPuzzleNumber - 1]) + ".txt"); // Charge le fichier de puzzle correspondant
-                    currentBoardComplexity = currentBoard.getFinalComplexity();
+                    currentBoardComplexity = currentBoard.getFinalComplexity();                                                  // Met à jour la complexité du puzzle
                 }
             }
 
@@ -511,6 +510,8 @@ int Affichage::displayMenu()
                 return -1; // Retourne -1 pour indiquer que le jeu doit être quitté
             }
         }
+
+        // Tant qu'il y a des puzzles qui sont en cours de création, on indique avec une icône de chargement
         if (!queueCreation.empty())
         {
 
@@ -550,6 +551,7 @@ bool Affichage::displayMenuBar(int BoardNumber, float solveTime)
     // affichage du numéro du board
     AfficherTexte(font, "", "Step : ", BoardNumber, 350, HEIGHT - 65, 0, 0, 0, 255);
 
+    // affichage du temps de résolution
     AfficherTexte(font, "Solvetime : ", "", 0, 600, HEIGHT - 65, 0, 0, 0, 255);
     AfficherTexte(font, "", "", solveTime, 720, HEIGHT - 65, 0, 0, 0, 255);
     AfficherTexte(font, "s", "", 0, 770, HEIGHT - 65, 0, 0, 0, 255);
@@ -579,10 +581,10 @@ bool Affichage::displayBoard(State s, float solveTime)
     int i = 0;
     for (const auto &voiture : s.getBoard_aff().getVehicules())
     {
-        // prend en compte l'inclinaison de la voiture
         SDL_Rect rect;
         rect.x = voiture.getPositionCol() * (WIDTH / 6) + 10;
         rect.y = voiture.getPositionRow() * ((HEIGHT - 100) / 6) + 10;
+        // prend en compte l'inclinaison de la voiture
         if (voiture.getDirection() == 0)
         {
             rect.w = (WIDTH / 6) - 20;
@@ -623,7 +625,6 @@ bool Affichage::displayBoard(State s, float solveTime)
     return displayMenuBar(s.getBoard_aff().getMoveCount(), solveTime);
 }
 
-// Boucle du jeu
 void Affichage::loadDisplay()
 {
 
@@ -631,10 +632,11 @@ void Affichage::loadDisplay()
     int fenetreOuverte = 0;
     while (fenetreOuverte != -1)
     {
-        // // Le menu principale
+        // Le menu principale
         fenetreOuverte = displayMenu();
         if (fenetreOuverte == 1)
         {
+            // La fenetre de solution
             fenetreOuverte = display();
         }
     }
@@ -647,11 +649,14 @@ int Affichage::display()
     Graphe g;
     State s;
     s.setBoard(currentBoard);
+
     // calcul le temps d'execution de l'algorithme
     auto start = chrono::high_resolution_clock::now();
     g.breadthFirstSearch(s, 100000);
     auto end = chrono::high_resolution_clock::now();
+
     chrono::duration<double> elapsed = end - start;
+
     float solveTime = elapsed.count();
     solveTime = roundf(solveTime * 100) / 100;
 

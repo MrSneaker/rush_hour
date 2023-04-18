@@ -1,59 +1,26 @@
 # Projet Rush Hour
 
-Le but de ce projet est d'écrire un programme permettant de trouver une
-solution au jeu *Rush Hour*.
+## But du projet
 
-## Règles du jeu
+Le but de ce projet est d'écrire un programme permettant de trouver une solution au jeu Rush Hour.
 
-Le jeu Rush Hour se joue seul sur une grille carrée de six cases de côté. Sur
-cette grille sont répartis des véhicules d'une case de largeur, et de deux ou
-trois cases de longueur. Ces véhicules peuvent être placés horizontalement ou
-verticalement. Chaque véhicule peut être déplacé en avant ou en arrière, mais
-pas latéralement, tant qu'il n'entre pas en collision avec un autre véhicule.
-Le but du jeu est de faire sortir l'un des véhicules par une sortie placée sur
-le bord du plateau. L'image ci dessous illustre un exemple de partie.
+## Description du jeu Rush Hour
 
-![Exemple Rush Hour](Sujet/rush_hour.gif)
+Le jeu Rush Hour se joue seul sur une grille carrée de six cases de côté. Sur cette grille sont répartis des véhicules d'une case de largeur, et de deux ou trois cases de longueur. Ces véhicules peuvent être placés horizontalement ou verticalement. Chaque véhicule peut être déplacé en avant ou en arrière, mais pas latéralement, tant qu'il n'entre pas en collision avec un autre véhicule. Le but du jeu est de faire sortir l'un des véhicules par une sortie placée sur le bord du plateau.
 
-Chaque déplacement de véhicule compte pour un coup, quelle que soit la longueur
-du déplacement. La qualité de votre solution dépend donc du nombre de coups
-nécessaires depuis la situation initiale pour faire sortir le véhicule.
+![Exemple Rush Hour](https://forge.univ-lyon1.fr/lifap6/rush-hour-etu/-/raw/master/Sujet/rush_hour.gif)
 
-## Modélisation
+Chaque déplacement de véhicule compte pour un coup, quelle que soit la longueur du déplacement. La qualité de votre solution dépend donc du nombre de coups nécessaires depuis la situation initiale pour faire sortir le véhicule.
 
-La recherche d'une solution au jeu Rush Hour peut être modélisée sous la forme
-d'un parcours de graphe. Dans ce graphe, les sommets sont des situations de jeu.
-Les arêtes sont des coups. Les deux images qui suivent représentent deux
-situations de jeu, et donc deux sommets du graphe. Il est possible de passer
-d'une situation à l'autre en déplaçant le long véhicule du haut, elles sont donc
-reliées par une arête dans le graphe.
+### Exemple de situation initiale
 
-![Situation depart](Sujet/rush_hour_situation_start.png)
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-![Situation fin](Sujet/rush_hour_situation_end.png)
+![Exemple solution initiale](https://forge.univ-lyon1.fr/lifap6/rush-hour-etu/-/raw/master/Sujet/rush_hour_initial.png)
 
-Votre première tâche pour ce projet consiste à élaborer une structure de données
-sous la forme d'une classe pour représenter les situations de jeu, munies de 
-méthodes pour accéder de façon pratique aux situations de jeu adjacentes.
-
-Il ne s'agit pas ici de *construire le graphe complet* ni de le *stocker*, mais
-simplement de pouvoir le *parcourir*.
-
-Pour vous aider dans l'élaboration de votre structure de données, vous pourrez
-utiliser le fait que :
-
-* les véhicules ne sont que de taille deux ou trois
-* il n'y a jamais plus de 16 véhicules
-* il n'y a toujours qu'un véhicule à sortir
-
-La situation initiale du problème résolu plus haut :
-
-![Situation initiale](Sujet/rush_hour_initial.png)
-
-pourra être décrite par [le fichier suivant](Sujet/puzzle.txt) :
+La situation initiale du problème résolu plus haut pourra être décrite par le fichier suivant :
 
 ```
 2 5
+14
 2 0 2 1
 0 0 2 0
 0 2 3 0
@@ -67,127 +34,104 @@ pourra être décrite par [le fichier suivant](Sujet/puzzle.txt) :
 4 4 2 0
 4 5 2 0
 5 1 2 1
+
 ```
-La première ligne correspond à la position de la sortie (ligne 2 colonne 5, on
-commence la numérotation à 0), la seconde ligne est la position du véhicule à
-sortir (ligne 2, colonne 0, longueur 2, horizontal), les lignes suivantes sont
-les autres véhicules, toujours avec le format ligne, colonne, longueur,
-horizontal (1) ou vertical (0). Dans le cas d'un véhicule horizontal, la
-position donnée est celle de la case la plus à gauche, dans le cas d'un véhicule
-vertical, la position donnée est celle de la case la plus haute.
 
-Pour favoriser les échanges, vous pouvez munir votre classe d'un constructeur
-prenant un fichier en paramètre, au format décrit ci-dessus, ainsi que d'une
-fonction pour exporter votre situation de jeu sous la forme d'un fichier
-similaire.
+- La première ligne correspond à la position de la sortie (ligne 2 colonne 5, on commence la numérotation à 0).
+- La seconde ligne correspond à la complexité du puzzle ( aka. le nombre de coup jusqu'a la situation de fin ).
+- La troisième ligne est la position du véhicule à sortir (ligne 2, colonne 0, longueur 2, horizontal).
+- Les lignes suivantes sont les autres véhicules, toujours avec le format :  
+  << ligne << colonne << longueur << horizontal (1) ou vertical (0).
 
-## Parcours
+  Dans le cas d'un véhicule horizontal, la position donnée est celle de la case la plus à gauche, dans le cas d'un véhicule vertical, la position donnée est celle de la case la plus haute.
 
-Une fois les situations de jeu représentables, il s'agit maintenant d'instancier
-la situation de jeu initiale, et de parcourir le graphe pour trouver une
-situation de jeu gagnante, ainsi que les coups permettant de l'atteindre.
-Idéalement, le nombre de coups à jouer pour atteindre cette situation de jeu
-gagnante devra être minimal. Dans le cas de l'exemple fourni ci-dessus, le code
-de votre responsable d'UE a donné une solution en 14 coups. Il est nécessaire de
-réaliser un parcours de graphe bien choisi. Il n'est pas ici nécessaire de
-générer tout le graphe, mais seulement de partir de la situation de départ, de
-lister les situations atteignables en déplaçant des véhicules, et de les ajouter
-à votre structure de données gérant les situations de jeu encore à traiter,
-selon le type de parcours choisi.
+## Fonctionnalités
 
-Les situations de jeu sont donc découvertes petit à petit, attention cependant à
-faire en sorte que votre exploration n'étudie qu'une fois chaque situation de
-jeu, et se rendre compte que certaines situations ont déjà été explorées. Sans
-cette attention, votre exploration risquera de tourner en rond entre des
-situations de jeu, ou d'en explorer beaucoup trop.
+- Interface utilisateur simple et facile à utiliser
+- Capacité à importer des puzzles pour les résoudre
+- Résolution d'un puzzle donné et affichage visuel de la solution, avec possibilité de parcourir cette solution
+- Création de nouveaux puzzles aléatoirement en essayant d'être intéressants à résoudre
+- Possibilité de créer plusieurs puzzles en même temps et de continuer à utiliser l'application
+- Import et export de puzzles au format décrit ci-dessus
 
-## Élaboration de nouveaux puzzles
+## Installation
 
-Une fois la résolution programmée, et le parcours du graphe compris,
-consacrez-vous à la création de nouveaux puzzles. Cette fois, il s'agit de
-fournir une situation de départ qui soit intéressante à jouer. La difficulté du
-puzzle correspondra au nombre de coups minimal pour le résoudre, et votre but
-sera ici de trouver des stratégies pour créer les puzzles les plus difficiles
-possibles.
+Pour installer le programme, suivez les étapes ci-dessous:
 
-## Conditions de rendu
+1.Clonez le dépôt git avec :
 
-Le travail est a réaliser autant que possible en binôme. Les monômes ne seront
-acceptés qu'exceptionnellement, à discuter avec votre encadrant de TP. Les
-membres du binôme devront être dans le même groupe de TP, et seront évalués par
-leur encadrant de TP. Le travail doit être rendu pour la dernière séance de TP
-de l'année qui aura lieu le mercredi 10 avril. Cette dernière séance de TP sera
-intégralement dédiée à votre évaluation.
+```bash
+$ git clone https://forge.univ-lyon1.fr/lifap6/rush-hour-etu.git
+```
 
-Vous devrez rendre votre travail sous la forme d'une archive `zip` ou `tar.gz`.
-Si vous utilisez d'autres formats d'archives, vous le faites à vos risques et
-périls. Dans cette archive, un fichier readme devra indiquer la procédure pour
-compiler votre code si elle n'est pas standard, et le fonctionnement des
-exécutables générés. Pour simplifier le travail de vos examinateurs, supposez
-qu'ils sont incompétents dans l'utilisation de vos outils (cmake, codeblocks,
-visual studio, ...). Fournissez une archive munie d'un `Makefile`. Si vous
-utilisez des dépendances autres que la librairie standard, mentionnez les
-clairement, et assurez vous qu'elle ne seront pas compliquées à installer.
+2.Installer les bibliotèques requises :
 
-Le code que vous rendrez devra être votre production propre. Si vous reprenez
-des portions de code, quelle qu'en soit la source et la taille (vos camarades,
-stackoverflow ou autre site d'entraide), vous devrez en mentionner la provenance
-précise, faute de quoi votre travail sera considéré comme une fraude. Notez que
-lors du rendu, l'ensemble des codes seront analysés par des outils permettant de
-détecter des similarités, et qu'il ne suffit pas de renommer les variables pour
-les berner.
+```bash
+$ sudo apt-get install libsdl2-dev libsdl2-image-dev libsdl2-ttf-dev libsdl2-mixer-dev
+```
 
-Vous êtes autorisés à utilisé l'intégralité de la librairie standard, en
-particulier les conteneurs (`vector`, `list`, `stack`, `queue`,
-`priority_queue`, `set`, `map`, `unordered_set`, `unordered_map`, ...) et les
-algorithmes (`sort`, `shuffle`, `binary_search`, ...).
+### Pour lancer le programme en test
 
-## Évaluation
+Compilez le projet en utilisant le Makefile :
 
-L'évaluation se passera en deux temps, un oral, puis une relecture de votre
-travail.
+```bash
+$ make
+```
 
-### Oral
+Lancez les tests de régression avec l'exécutable rush_hour_test :
 
-Le jour du rendu, en séance avec votre encadrant, il vous fournira un horaire de
-passage pour un oral de démonstration.  Pendant cet oral, vous ferez brièvement
-la démonstration de vos résultats, puis vous serez interrogés sur le code que
-vous avez rendu. Votre correcteur aura ici plusieurs objectifs :
+```bash
+$ ./bin/rush_hour_test
+```
 
-* déterminer à quel point vous avez compris le sujet
-* déterminer jusqu'où vous avez abordé le sujet
-* déterminer si vous êtes capables de commenter vos choix et de les analyser
-* déterminer si vous êtes bien l'auteur du code rendu
-* déterminer si les contributions dans le binôme sont équilibrées
+Lancez l'application en exécutant l'exécutable rush_hour :
 
-### Relecture
+```bash
+$ ./bin/rush_hour
+```
 
-La relecture de votre code sera ensuite faite sans vous. Chaque correcteur sera
-muni d'une grille pour évaluer les points suivants :
+## Utilisation
 
-* votre code compile facilement
-* les exécutables, lancés selon les instructions du readme, sont fonctionnels
-* les exécutables permettent de tester l'intégralité de votre code
-* les exécutables permettent de tester les points d'évaluation qui suivent
-* le programme permet de charger une situation de jeu initiale
-* le programme permet de trouver une solution 
-* la solution trouvée est la plus courte
-* le parcours de graphe est réalisé correctement
-* les structures de données sont pertinentes en terme d'espace mémoire
-* les fonctions et méthodes sont pertinentes en terme d'espace et de complexité
-* la gestion de la mémoire est propre et sans fuites
-  * un outil de détection de type valgrind a été utilisé pour s'en assurer
-  * si des problèmes persistent, ils sont identifiés dans le readme
-  * les problèmes sont mentionnés lors de l'oral et discutés
-* le code est clair et bien structuré
-  * nommage clair des fonctions et variables
-  * bon découpage des fonctions pour éviter la duplication de code
-  * pas de fonctions trop longues
-  * pas de lignes de code trop longues
-  * indentation claire
+- Pour lancer la résolution du puzzle courant ( celui qui est affiché au centre sur le menu ) appuyer sur le boutton `Solve`
+  Dans la fenêtre de résolution vous pourrez naviguer entre les différentes étapes de résolution en appuyant sur les touche `flèche gauche`( pour aller en arrière ) et `flêche droit` ( pour avancer dans la solution ).  
+  Il y'aura aussi afficher le temps de résolution du puzzle avec `solveTime`
+- Pour lancer la création d'un nouveau puzzle, appuyer sur le boutton `Create new puzzle`
+- Les flèches à droite et à gauche du puzzle central permettant de naviguer entre les différents puzzle stocké dans le fichier `data/puzzlesTXT`
 
-Il est toujours difficile de donner un barème précis a priori, sans se bloquer
-ensuite la possibilité de pouvoir adapter la notation en fonction des travaux
-rendus et de la difficulté perçue du sujet. Il est néanmoins possible d'affirmer
-que pour obtenir la moyenne, il sera nécessaire d'avoir au moins abordé la
-partie résolution.
+### Importer un nouveau puzzle
+
+pour rappel le puzzle doit être de la forme :
+
+```
+2 5       # position {ligne, colonne} de la sortie
+14        # complexi
+2 0 2 1   # voiture qui se déplace : ligne << colonne << taille << orientation
+0 0 2 0   ##
+0 2 3 0
+0 3 3 1
+1 3 2 0
+1 4 2 1
+2 5 2 0   # le reste des voitures
+3 0 2 1
+4 0 2 0
+4 3 2 0
+4 4 2 0
+4 5 2 0
+5 1 2 1   ##
+```
+
+Si votre puzzle.txt ne contient pas de complexité rajouter 0 à la place sinon le code ne va pas fonctionner !
+
+Si tout est bon ajouter votre puzzle dans data/puzzlesTXT et relancer votre programme avec  
+`$ make && ./bin/rush_hour` ( tips )
+
+Dans le dossier data/puzzlesInteressants vous trouverez des puzzles avec une complexité intéressantes.
+
+---
+
+- Pour quitter l'application appuyer sur le bouton `quit`
+
+## Contributeurs
+
+- Matéo Munoz
+- Benjamin Boulet

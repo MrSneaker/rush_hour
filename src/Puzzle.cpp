@@ -50,6 +50,8 @@ bool Puzzle::isValidPlacement(vehicule &v)
         // Vérification des nouvelles règles pour les véhicules horizontaux
         for (int col = 0; col < p.getSize(); col++)
         {
+            // verifie que le nombre de véhicule bloqué est inférieur à 3 ou 2 ( qu'il n'ai pas trois vehicule bloqué)
+            // exemple : 3 vehicule de taille 2 qui sont sur la même ligne et dans la même direction
             if (p.getBoardState().board_state[v.getPositionRow()][col])
             {
                 blockedCount++;
@@ -137,12 +139,19 @@ bool Puzzle::generateRandomPuzzle(std::promise<void> createPuzzlePromise)
     {
         // on compte le nombre de tours pour limiter le temps d'execution.
         int iteration = 0;
+        // on place un véhicule aléatoire
         int position_col = rand() % 6;
         int position_row = rand() % 6;
+
         vehicule v = randomVehicule(position_row, position_col);
-        while (!isValidPlacement(v) && (iteration < 100))
+
+        while (!isValidPlacement(v) && (iteration < 100)) // on vérifie que le véhicule est bien placable
         {
+            // on va retirer un nouveau véhicule aléatoire tant que le précédent n'est pas placable
+
+            // on change la taille du véhicule
             v.getLength() == 2 ? v.setLength(3) : v.setLength(2);
+            // on change la position du véhicule
             int position_col = rand() % 6;
             int position_row = rand() % 6;
             v = randomVehicule(position_row, position_col);
