@@ -99,6 +99,12 @@ Lancez l'application en exécutant l'exécutable rush_hour :
 $ ./bin/rush_hour
 ```
 
+Pour lancer Valgrind sur l'application :
+
+```bash
+$ valgrind --tool=memcheck --suppressions=valgrind_lif7.supp ./bin/rush_hour
+```
+
 ## Utilisation
 
 - Pour lancer la résolution du puzzle courant ( celui qui est affiché au centre sur le menu ) appuyez sur le boutton `Solve`
