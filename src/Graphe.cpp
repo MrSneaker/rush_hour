@@ -49,7 +49,7 @@ void Graphe::makeNeighbor(State &s)
 int Graphe::breadthFirstSearch(State s, int max_iterations)
 {
     int nb_coup = 0;
-    cout << "processing.." << endl;
+    cout << "Solve : processing.." << endl;
     State test;
     int iteration = 0;
     q.push(s);
@@ -95,7 +95,8 @@ int Graphe::breadthFirstSearch(State s, int max_iterations)
     }
     else
         nb_coup = win_state.getBoard().getMoveCount();
-    cout << "itération : " << iteration << endl;
+    // cout << "itération : " << iteration << endl;
+    cout << "Solve : done" << endl;
     path.push_back(win_state);
     State *parent = win_state.getParent();
     while (parent != nullptr)

@@ -90,6 +90,7 @@ void plateau::initBoard(string filename)
     reset();
     ifstream infile(filename);
     infile >> exitRow >> exitCol;
+    infile >> finalComplexity;
     int row, col, len, dir;
     while (infile >> row >> col >> len >> dir)
     {
@@ -109,7 +110,10 @@ void plateau::initBoard(string filename)
         }
         vehicules.push_back(v);
     }
+
     infile.close();
+    cout << "Nombre de vehicules : " << vehicules.size() << endl;
+    cout << "Complexite du plateau : " << finalComplexity << endl;
     assert(vehicules.size() > 0 && vehicules.size() <= 16 && "Le nombre de vehicules doit être compris entre 1 et 16");
     for (auto v : vehicules)
     {
@@ -298,6 +302,11 @@ void plateau::play()
     // displayBoard();
 }
 //------------------------------------------------------------------------------
+
+int plateau::getFinalComplexity()
+{
+    return finalComplexity;
+}
 
 const int &plateau::getSize() const
 {

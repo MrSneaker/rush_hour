@@ -27,7 +27,7 @@ public:
     vehicule randomVehicule(int row, int col);
     void placeVehicule(vehicule v);
     bool isValidPlacement(vehicule &v);
-    void generateRandomPuzzle(std::promise<void> createPuzzlePromise);
+    bool generateRandomPuzzle(std::promise<void> createPuzzlePromise);
     bool writePuzzle(string filename);
     bool generatePuzzleWithBacktracking(int row, int col);
     void test_regression();

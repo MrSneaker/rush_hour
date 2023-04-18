@@ -10,6 +10,9 @@
 #include <string>
 #include <vector>
 #include <sstream>
+#include <dirent.h>
+#include <thread>
+#include <future>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
 #include <SDL2/SDL_ttf.h>
@@ -30,6 +33,8 @@ private:
     TTF_Font *font;
     Graphe g;
     plateau currentBoard;
+    vector<plateau> boards;
+    int currentBoardComplexity;
     bool isPressed;
     int BoardNumber;
     int YClicked, XClicked;
@@ -38,6 +43,8 @@ private:
     int space = 27;
     int currentPuzzleNumber = 1;
     int puzzleNumberMax = 0;
+    vector<bool> queueCreation;
+    int angle = 0;
 
     //-----------------Image-----------------
 
@@ -58,6 +65,12 @@ private:
     unsigned int puzzleChosenY;
     unsigned int puzzleChosenW;
     unsigned int puzzleChosenH;
+
+    Image loadingIcon;
+    unsigned int loadingIconX;
+    unsigned int loadingIconY;
+    unsigned int loadingIconW;
+    unsigned int loadingIconH;
 
     //-----------------Boutons-----------------
     int b_playX;
@@ -84,8 +97,8 @@ public:
     void init();
     void loadDisplay();
     int display();
-    bool displayBoard(State s);
-    bool displayMenuBar(int BoardNumber);
+    bool displayBoard(State s, float solveTime);
+    bool displayMenuBar(int BoardNumber, float solveTime);
     int displayMenu();
     void displayPuzzleChosen();
     void createNewPuzzle(std::promise<void> createPuzzlePromise);

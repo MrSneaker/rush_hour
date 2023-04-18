@@ -43,7 +43,7 @@ int main()
     // s_test.setBoard(p_test);
     // Graphe gtest;
     // clock_t start = clock();
-    // int res = gtest.breadthFirstSearch(s_test, 100000);
+    // int res = gtest.breadthFirstSearch(s_test, 10000);
     // cout << "nb coup : " << res << endl;
     // clock_t end = clock();
     // cout << "temps de process : " << (end - start) / (CLOCKS_PER_SEC / 1000) << " milisecondes." << endl;
