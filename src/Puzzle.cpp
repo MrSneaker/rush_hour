@@ -131,14 +131,12 @@ void Puzzle::generateRandomPuzzle(std::promise<void> createPuzzlePromise)
     p.updateBoard();
     for (int i = 0; i < nb_vehicules; ++i)
     {
-        srand(time(NULL));
         int iteration = 0;
         int position_col = rand() % 6;
         int position_row = rand() % 6;
         vehicule v = randomVehicule(position_row, position_col);
-        while (!isValidPlacement(v) && iteration < 100)
+        while (!isValidPlacement(v) && (iteration < 200))
         {
-            // cout << "itération dans randomGene : " << iteration << endl;
             v.getLength() == 2 ? v.setLength(3) : v.setLength(2);
             int position_col = rand() % 6;
             int position_row = rand() % 6;
@@ -147,7 +145,6 @@ void Puzzle::generateRandomPuzzle(std::promise<void> createPuzzlePromise)
         }
         if (iteration >= 100)
         {
-            // cout << "Impossible de placer le véhicule " << i << endl;
             break;
         }
         else
