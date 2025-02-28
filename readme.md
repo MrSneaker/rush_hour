@@ -1,5 +1,8 @@
 # Projet Rush Hour
 
+Note obtenu : 19.5 / 20
+Classement : 3 / 54 
+
 ## But du projet
 
 Le but de ce projet est d'écrire un programme permettant de trouver une solution au jeu Rush Hour.
